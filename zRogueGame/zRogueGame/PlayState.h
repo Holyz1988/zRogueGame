@@ -12,5 +12,8 @@ public:
 
 private:
 	void pauseGame();
+
+private:
+	sf::RectangleShape rect;
 };
 

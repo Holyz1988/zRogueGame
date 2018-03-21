@@ -12,7 +12,7 @@ void RessourceHolder::loadTexture(std::string  textureName, const std::string fi
 	mTextureMap.insert(std::pair<std::string, sf::Texture>(textureName, texture));
 }
 
-sf::Texture & RessourceHolder::getTexture(std::string  textureName)
+sf::Texture& RessourceHolder::getTexture(std::string  textureName)
 {
 	auto found = mTextureMap.find(textureName);
 	return found->second;

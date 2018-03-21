@@ -28,7 +28,6 @@ MenuState::MenuState(Game* game)
 	buttons[1].setString("Options");
 	buttons[2].setString("Quit");
 
-
 	this->game = game;
 }
 
@@ -47,12 +46,28 @@ void MenuState::handleInput()
 				game->window.close();
 			else if (event.key.code == sf::Keyboard::Return)
 				loadGame();
+			break;
+		case sf::Event::MouseMoved:
+			changeTextDesign(buttons);
+			break;
 		}
 	}
+
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+	{
+		if (isTextClicked(buttons[0]))
+			loadGame();
+		else if (isTextClicked(buttons[1]))
+			std::cout << "Go to option Screen" << std::endl;
+		else if (isTextClicked(buttons[2]))
+			game->window.close();
+	}
+
 }
 
 void MenuState::update(sf::Time dt)
 {
+	//changeTextColor(buttons);
 }
 
 void MenuState::draw(sf::Time dt)
@@ -82,5 +97,25 @@ bool MenuState::isTextClicked(sf::Text text)
 		return false;
 }
 
+
+//Change la couleur du text qui est survolé par la souris
+void MenuState::changeTextDesign(std::vector<sf::Text>& buttons)
+{
+	for (int i = 0; i < buttons.size(); i++)
+	{
+		if (isTextClicked(buttons[i]))
+		{
+			buttons[i].setFillColor(sf::Color::Red);
+			buttons[i].setCharacterSize(50);
+			buttons[i].setOutlineThickness(6.f);
+		}
+		else
+		{
+			buttons[i].setFillColor(sf::Color::White);
+			buttons[i].setCharacterSize(40);
+			buttons[i].setOutlineThickness(0.f);
+		}
+	}
+}
 //TODO CONTINUER LE MENU
 

@@ -17,6 +17,7 @@ private:
 	//Permet de passer du menu au jeu principal
 	void loadGame();
 	bool isTextClicked(sf::Text text);
+	void changeTextDesign(std::vector<sf::Text>& buttons);
 
 private:
 	RessourceHolder menuScreen;

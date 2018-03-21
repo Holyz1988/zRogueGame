@@ -6,7 +6,11 @@
 
 PlayState::PlayState(Game * game)
 {
+	this->rect.setSize(sf::Vector2f(32, 32));
+	this->rect.setPosition(sf::Vector2f(200, 200));
+	this->rect.setFillColor(sf::Color::Red);
 	this->game = game;
+
 }
 
 void PlayState::handleInput()
@@ -37,12 +41,7 @@ void PlayState::update(sf::Time dt)
 
 void PlayState::draw(sf::Time dt)
 {
-	sf::RectangleShape rect;
-	rect.setPosition(sf::Vector2f(100, 100));
-	rect.setFillColor(sf::Color::Green);
-	rect.setSize(sf::Vector2f(64, 64));
-
-	game->window.draw(rect);
+	game->window.draw(this->rect);
 }
 
 void PlayState::pauseGame()
