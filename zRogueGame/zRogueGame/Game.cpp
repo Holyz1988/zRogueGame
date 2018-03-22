@@ -26,38 +26,43 @@ void Game::popState( )
 {
 	states.back();
 	delete states.back( );
-	states.pop_back ();
+	states.pop_back();
 }
 
 //Renvoi le dernier élement du vecteur, donc le mode de jeu dans lequel on est.
-GameState * Game::currentState()
+GameState * Game::currentState( )
 {
-	if (states.empty())
+	if ( states.empty( ) )
 		return nullptr;
 	else
-		return states.back();
+		return states.back( );
 }
 
-void Game::gameLoop()
+void Game::gameLoop( )
 {
 	sf::Clock clock;
 
 	while (window.isOpen())
 	{
 		//Controle des FPS
-		sf::Time dt = clock.restart();
+		float dt = clock.restart().asSeconds();
 
-		if ( currentState() == nullptr )
+		if ( currentState( ) == nullptr )
 			continue;
 
 		//Récupérer les saisies utilisateurs pendant l'état acutel de notre jeu (menu, maingame, pause, etc)
-		currentState()->handleInput();
-		currentState()->update(dt);
+		currentState( )->handleInput( );
+		currentState( )->update( dt );
 
-		window.clear();
+		window.clear( );
 
-		currentState()->draw(dt);
+		currentState( )->draw( dt );
 
-		window.display();
+		window.display( );
 	}
+}
+
+void Game::previousState()
+{
+	states.pop_back();
 }

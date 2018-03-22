@@ -6,11 +6,10 @@
 
 PlayState::PlayState(Game * game)
 {
-	this->rect.setSize(sf::Vector2f(32, 32));
-	this->rect.setPosition(sf::Vector2f(200, 200));
-	this->rect.setFillColor(sf::Color::Red);
+	ressources.loadTexture("Player", "mainPlayer.png");
+	player.sprite.setTexture(ressources.getTexture("Player"));
+	player.sprite.setTextureRect(sf::IntRect(0, 0, 32, 32));
 	this->game = game;
-
 }
 
 void PlayState::handleInput()
@@ -27,7 +26,7 @@ void PlayState::handleInput()
 			break;
 
 			//pause game
-		case sf::Event::KeyPressed:
+		case sf::Event::KeyReleased:
 			if (event.key.code == sf::Keyboard::Escape)
 				pauseGame();
 			break;
@@ -35,13 +34,14 @@ void PlayState::handleInput()
 	}
 }
 
-void PlayState::update(sf::Time dt)
+void PlayState::update(float dt)
 {
+	player.update(dt);
 }
 
-void PlayState::draw(sf::Time dt)
+void PlayState::draw(float dt)
 {
-	game->window.draw(this->rect);
+	game->window.draw(this->player.sprite);
 }
 
 void PlayState::pauseGame()

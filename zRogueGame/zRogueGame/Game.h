@@ -2,6 +2,7 @@
 
 #include <SFML\Graphics.hpp>
 #include <vector>
+#include <memory>
 
 class GameState;
 
@@ -14,6 +15,8 @@ public:
 	//Fonction pour changer l'état du jeu
 	void pushState(GameState* state);
 	void popState();
+
+	void previousState();
 
 	//Méthode qui permet de récupérer notre état actuel (pointeur obligatoire)
 	GameState* currentState();
