@@ -1,4 +1,5 @@
 #include "Player.h"
+#include <iostream>
 
 Player::Player()
 {
@@ -23,22 +24,22 @@ void Player::update(float dt)
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 	{
-		rect.move(0, movementSpeed * dt);
+		rect.move(0, mSpeed * dt);
 		sprite.setTextureRect(sf::IntRect(currentFrame * 32, 0 * 32, 32, 32));
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
 	{
-		rect.move(-movementSpeed * dt, 0);
+		rect.move(-mSpeed * dt, 0);
 		sprite.setTextureRect(sf::IntRect(currentFrame * 32, 1 * 32, 32, 32));
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
-		rect.move(movementSpeed * dt, 0);
+		rect.move(mSpeed * dt, 0);
 		sprite.setTextureRect(sf::IntRect(currentFrame * 32, 2 * 32, 32, 32));
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
 	{
-		rect.move(0, -movementSpeed * dt);
+		rect.move(0, -mSpeed * dt);
 		sprite.setTextureRect(sf::IntRect(currentFrame * 32, 3 * 32, 32, 32));
 	}
 
@@ -53,6 +54,11 @@ int Player::getDamage()
 void Player::setDamage(int damage)
 {
 	this->attackDamage = damage;
+}
+
+std::vector<Projectile> Player::getBullets()
+{
+	return this->bullets;
 }
 
 void Player::fireBullets(sf::RenderWindow& window)
@@ -97,4 +103,5 @@ void Player::updateVectors(sf::RenderWindow& window)
 	aimDirection = mousePosition - playerCenter;
 	aimDirectionNormalized = aimDirection / (sqrt(pow(aimDirection.x, 2) + pow(aimDirection.y, 2)));
 }
+
 

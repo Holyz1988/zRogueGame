@@ -17,6 +17,8 @@ public:
 	int getDamage();
 	void setDamage(int damage);
 
+	std::vector<Projectile> getBullets();
+
 private:
 	//Information sur le joueur et les balles
 	sf::Vector2f playerCenter;
@@ -36,7 +38,7 @@ private:
 
 	float timePassed; // Temps écouler
 	int currentFrame = 0; // On comment à la 1ère frame
-	float movementSpeed = 150.f; //100 pixels / secondes
+	float mSpeed = 250.f; //100 pixels / secondes
 	float switchTime = 0.3f; // Temps que prend une frame d'animation
 
 	int attackDamage = 10;

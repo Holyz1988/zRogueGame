@@ -37,9 +37,12 @@ void PlayState::handleInput()
 
 void PlayState::update(float dt)
 {
-	mEnemy.spawnEnemies(mEnemies, mEnemy, game->window, mPlayer);
-	mPlayer.fireBullets(game->window);
-	mPlayer.updateVectors(game->window);
+	mEnemy.spawnEnemies(mEnemies, mEnemy, game->window, mPlayer);//Spawn les enemies
+	mEnemy.updateVectors(mPlayer);//MAJ des positions enemies
+	mEnemy.updateMovement(mEnemies, game->window, mPlayer);//MAJ des mouvement enimies
+	mEnemy.bulletCollision(mPlayer.getBullets());
+	mPlayer.fireBullets(game->window);//MAJ des projectiles
+	mPlayer.updateVectors(game->window);//MAJ des positions joueurs
 	mPlayer.update(dt);//Met à jour la position du joueur
 }
 

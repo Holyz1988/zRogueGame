@@ -16,7 +16,7 @@ public:
 private:
 	float radius;
 	sf::Vector2f Velocity;
-	float mSpeed; //200 pixels / secondes
+	float mSpeed; //bullet speed
 
 	int attackDamage = 10;
 };

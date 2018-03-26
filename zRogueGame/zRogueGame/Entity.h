@@ -4,6 +4,7 @@
 class Entity
 {
 public:
+	sf::Vector2f position;
 	sf::CircleShape circle;
 	sf::RectangleShape rect;
 	sf::Sprite sprite;

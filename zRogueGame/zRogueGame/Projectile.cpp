@@ -3,7 +3,7 @@
 
 
 Projectile::Projectile() : Velocity(0.f, 0.f),
-						   mSpeed(5.f)
+						   mSpeed(10.f)
 {
 	this->circle.setRadius(4.f);
 	this->circle.setFillColor(sf::Color::Blue);
