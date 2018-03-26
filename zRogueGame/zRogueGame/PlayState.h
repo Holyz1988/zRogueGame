@@ -1,4 +1,6 @@
 #pragma once
+#include "PlayState.h"
+#include "MenuState.h"
 #include "GameState.h"
 #include "Player.h"
 #include "Enemy.h"
@@ -14,6 +16,8 @@ public:
 
 private:
 	void pauseGame();
+
+	//void centerCamera();
 
 	//void updateVectors();
 	//void fireBullets();

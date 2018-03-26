@@ -2,6 +2,9 @@
 #include "Entity.h"
 #include "RessourceHolder.h"
 #include "Projectile.h"
+#include "Enemy.h"
+
+class Enemy;
 
 class Player : public Entity
 {
@@ -12,6 +15,7 @@ public:
 	void fireBullets(sf::RenderWindow& window);
 	void drawBullets(sf::RenderWindow& window);
 	void updateVectors(sf::RenderWindow& window);
+	void bulletCollision(std::vector<Enemy>& enemies);
 
 	//Getters et Setters
 	int getDamage();

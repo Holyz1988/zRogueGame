@@ -3,18 +3,18 @@
 #include "RessourceHolder.h"
 #include "Player.h"
 
+class Player;
+
 class Enemy : public Entity
 {
 public:
 	Enemy();
 
-	void updateMovement(std::vector<Enemy>& enemies, sf::RenderWindow& window, Player&  player);
-	void spawnEnemies(std::vector<Enemy>& enemies, Enemy& enemy, sf::RenderWindow& window, Player& player);
+	void updateMovement(std::vector<Enemy>& enemies, sf::RenderWindow& window);
+	void spawnEnemies(std::vector<Enemy>& enemies, Enemy& enemy, Player& player);
 	void drawEnemies(std::vector<Enemy>& enemies, sf::RenderWindow& window);
 
-	void bulletCollision(std::vector<Projectile> bullets);
-
-	void updateVectors(Player player);
+	void updateV(Player& player);
 
 	void setVelocity(sf::Vector2f velocity);
 	sf::Vector2f getVelocity();

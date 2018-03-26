@@ -104,4 +104,21 @@ void Player::updateVectors(sf::RenderWindow& window)
 	aimDirectionNormalized = aimDirection / (sqrt(pow(aimDirection.x, 2) + pow(aimDirection.y, 2)));
 }
 
+void Player::bulletCollision(std::vector<Enemy>& enemies)
+{
+	for (size_t i = 0; i < bullets.size(); i++)
+	{
+		for (size_t j = 0; j < enemies.size(); j++)
+		{
+			if (enemies[j].rect.getGlobalBounds().intersects(bullets[i].circle.getGlobalBounds()))
+			{
+				enemies.erase(enemies.begin() + j);
+				bullets.erase(bullets.begin() + i);
+				break;
+			}
+		}
+		
+	}
+}
+
 

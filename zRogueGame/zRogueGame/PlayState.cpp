@@ -1,9 +1,6 @@
+#include "PlayState.h"
 #include <iostream>
 #include <math.h>
-
-#include "PlayState.h"
-#include "MenuState.h"
-#include "GameState.h"
 
 PlayState::PlayState(Game * game)
 {
@@ -37,10 +34,10 @@ void PlayState::handleInput()
 
 void PlayState::update(float dt)
 {
-	mEnemy.spawnEnemies(mEnemies, mEnemy, game->window, mPlayer);//Spawn les enemies
-	mEnemy.updateVectors(mPlayer);//MAJ des positions enemies
-	mEnemy.updateMovement(mEnemies, game->window, mPlayer);//MAJ des mouvement enimies
-	mEnemy.bulletCollision(mPlayer.getBullets());
+	mEnemy.spawnEnemies(mEnemies, mEnemy, mPlayer);//Spawn les enemies
+	mEnemy.updateV(mPlayer);//MAJ des positions enemies
+	mEnemy.updateMovement(mEnemies, game->window);//MAJ des mouvement enimies
+	mPlayer.bulletCollision(mEnemies);
 	mPlayer.fireBullets(game->window);//MAJ des projectiles
 	mPlayer.updateVectors(game->window);//MAJ des positions joueurs
 	mPlayer.update(dt);//Met à jour la position du joueur
@@ -48,6 +45,12 @@ void PlayState::update(float dt)
 
 void PlayState::draw(float dt)
 {
+	/*
+	TODO
+	Faire la caméra
+	centerCamera();
+	game->window.setView(Camera);
+	*/
 	game->window.draw(this->mPlayer.sprite);
 	mPlayer.drawBullets(game->window);
 	mEnemy.drawEnemies(mEnemies, game->window);
@@ -56,4 +59,10 @@ void PlayState::draw(float dt)
 void PlayState::pauseGame()
 {
 }
+/*
+void PlayState::centerCamera()
+{
+	this->Camera.setCenter(mPlayer.rect.getPosition());
+}
+*/
 
