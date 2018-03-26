@@ -1,14 +1,15 @@
+#include <iostream>
+#include <math.h>
+
 #include "PlayState.h"
 #include "MenuState.h"
-#include <iostream>
-
 #include "GameState.h"
 
 PlayState::PlayState(Game * game)
 {
 	ressources.loadTexture("Player", "mainPlayer.png");
-	player.sprite.setTexture(ressources.getTexture("Player"));
-	player.sprite.setTextureRect(sf::IntRect(0, 0, 32, 32));
+	mPlayer.sprite.setTexture(ressources.getTexture("Player"));
+	mPlayer.sprite.setTextureRect(sf::IntRect(0, 0, 32, 32));
 	this->game = game;
 }
 
@@ -36,14 +37,20 @@ void PlayState::handleInput()
 
 void PlayState::update(float dt)
 {
-	player.update(dt);
+	mEnemy.spawnEnemies(mEnemies, mEnemy, game->window, mPlayer);
+	mPlayer.fireBullets(game->window);
+	mPlayer.updateVectors(game->window);
+	mPlayer.update(dt);//Met à jour la position du joueur
 }
 
 void PlayState::draw(float dt)
 {
-	game->window.draw(this->player.sprite);
+	game->window.draw(this->mPlayer.sprite);
+	mPlayer.drawBullets(game->window);
+	mEnemy.drawEnemies(mEnemies, game->window);
 }
 
 void PlayState::pauseGame()
 {
 }
+

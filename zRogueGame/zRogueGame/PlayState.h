@@ -1,7 +1,7 @@
 #pragma once
 #include "GameState.h"
-#include "RessourceHolder.h"
 #include "Player.h"
+#include "Enemy.h"
 
 class PlayState : public GameState
 {
@@ -15,10 +15,20 @@ public:
 private:
 	void pauseGame();
 
+	//void updateVectors();
+	//void fireBullets();
+	//void drawBullets();
+
 private:
+	sf::View Camera;
+
 	RessourceHolder ressources;
-	sf::Sprite mPlayer;
+	sf::Sprite mSpritePlayer;
 	sf::Vector2f posPlayer;
-	Player player;
+	Player mPlayer;
+	Enemy mEnemy;
+	std::vector<Enemy> mEnemies;
+
+
 };
 
