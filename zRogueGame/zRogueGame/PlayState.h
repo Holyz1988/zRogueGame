@@ -30,9 +30,14 @@ private:
 	sf::Sprite mSpritePlayer;
 	sf::Vector2f posPlayer;
 	Player mPlayer;
+
+	//enemies
+	Enemy mDragon;
+
 	Enemy mEnemy;
 	std::vector<Enemy> mEnemies;
 
-
+	Enemy mOrc;
+	std::vector<Enemy> mOrcs;
 };
 

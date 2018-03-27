@@ -1,16 +1,18 @@
 #include "Player.h"
 #include <iostream>
 
-Player::Player()
+Player::Player() : invulnerable(true)
 {
+	this->currentHp = maxHP;
 	rect.setSize(sf::Vector2f(32.f, 32.f));
 	rect.setPosition(sf::Vector2f(200.f, 200.f));
 }
 
 void Player::update(float dt)
 {
-	timePassed += clock.getElapsedTime().asSeconds();
-	clock.restart();
+
+	//Permet de mettre la bonne frame toute les 0.175 secondes
+	timePassed += clock.restart().asSeconds();
 
 	if (timePassed >= switchTime)
 	{
@@ -22,24 +24,26 @@ void Player::update(float dt)
 		}
 	}
 
+
+	//Mouvement du joueur et animation
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 	{
-		rect.move(0, mSpeed * dt);
+		this->rect.move(0, mSpeed * dt);
 		sprite.setTextureRect(sf::IntRect(currentFrame * 32, 0 * 32, 32, 32));
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
 	{
-		rect.move(-mSpeed * dt, 0);
+		this->rect.move(-mSpeed * dt, 0);
 		sprite.setTextureRect(sf::IntRect(currentFrame * 32, 1 * 32, 32, 32));
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
-		rect.move(mSpeed * dt, 0);
+		this->rect.move(mSpeed * dt, 0);
 		sprite.setTextureRect(sf::IntRect(currentFrame * 32, 2 * 32, 32, 32));
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
 	{
-		rect.move(0, -mSpeed * dt);
+		this->rect.move(0, -mSpeed * dt);
 		sprite.setTextureRect(sf::IntRect(currentFrame * 32, 3 * 32, 32, 32));
 	}
 
@@ -56,9 +60,41 @@ void Player::setDamage(int damage)
 	this->attackDamage = damage;
 }
 
+int Player::getCurrentHP()
+{
+	return this->currentHp;
+}
+
 std::vector<Projectile> Player::getBullets()
 {
 	return this->bullets;
+}
+
+//Méthode qui test si il ya une collision entre un ennemi et le joueur
+bool Player::collideWithEnemy(Enemy& enemy)
+{
+
+	if (this->rect.getGlobalBounds().intersects(enemy.rect.getGlobalBounds()))
+	{
+		return true;
+	}
+	else
+		return false;
+}
+
+void Player::losingHp(Enemy& enemy)
+{
+	if (collideWithEnemy(enemy))
+	{
+		resetInvulnerableTimer();
+
+		if (!invulnerable) // 2 secondes d'invulnérabilités
+		{
+			this->currentHp -= 10;
+			invulnerable = true;
+			invulnerableTimer = 0;
+		}
+	}
 }
 
 void Player::fireBullets(sf::RenderWindow& window)
@@ -117,8 +153,20 @@ void Player::bulletCollision(std::vector<Enemy>& enemies)
 				break;
 			}
 		}
-		
+
 	}
 }
+
+//Permet de retirer la vulnérabilité
+void Player::resetInvulnerableTimer()
+{
+	invulnerableTimer += invulnerableClock.restart().asSeconds();
+
+	if (invulnerableTimer > 2) // 2 secondes d'invulnérabilité
+		invulnerable = false;
+}
+
+
+
 
 

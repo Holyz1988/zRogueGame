@@ -5,7 +5,7 @@
 
 OptionState::OptionState(Game* game)
 {
-	optionScreen.loadTexture("optionBackground", "Space_Background.png");
+	optionScreen.loadTexture("optionBackground", "ressources/Space_Background.png");
 	optionBackground.setTexture(optionScreen.getTexture("optionBackground"));
 	this->game = game;
 }

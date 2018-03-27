@@ -17,14 +17,21 @@ public:
 	void updateVectors(sf::RenderWindow& window);
 	void bulletCollision(std::vector<Enemy>& enemies);
 
+	void resetInvulnerableTimer();
+
 	//Getters et Setters
 	int getDamage();
 	void setDamage(int damage);
 
+	int getCurrentHP();
+
 	std::vector<Projectile> getBullets();
 
+	bool collideWithEnemy(Enemy& enemy);
+	void losingHp(Enemy& enemy);
+
 private:
-	//Information sur le joueur et les balles
+	//Vecteurs qui permettent de construire le tire du joueur
 	sf::Vector2f playerCenter;
 	sf::Vector2f mousePosition;
 	sf::Vector2f aimDirection;
@@ -34,10 +41,10 @@ private:
 	std::vector<Projectile> bullets;// Conteneurs de projectiles
 
 	sf::Clock bulletClock;
+	sf::Clock invulnerableClock;
 	float timeAccumulator;
-	const float bulletDelay = 0.2f;
+	const float bulletDelay = 0.1f;
 
-	RessourceHolder ressource;
 	sf::Clock clock; // Horloge
 
 	float timePassed; // Temps écouler
@@ -45,7 +52,12 @@ private:
 	float mSpeed = 250.f; //100 pixels / secondes
 	float switchTime = 0.3f; // Temps que prend une frame d'animation
 
-	int attackDamage = 10;
+	float invulnerableTimer;
+
+	//Stats
+	int attackDamage = 5;
+	int currentHp;
 	int maxHP = 100;
+	bool invulnerable;
 };
 

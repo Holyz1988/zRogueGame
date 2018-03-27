@@ -9,12 +9,12 @@
 MenuState::MenuState(Game* game)
 {
 	//On charge l'image de fond
-	ressources.loadTexture("menuButton", "menu_background.png");
+	ressources.loadTexture("menuButton", "ressources/menu_background.png");
 	menuSprite.setTexture(ressources.getTexture("menuButton"));
 
 	//On charge la police du menu
 	sf::Text text;
-	ressources.loadFont("menuFont", "gomarice_game_continue_02.ttf");
+	ressources.loadFont("menuFont", "ressources/gomarice_game_continue_02.ttf");
 	text.setFont(ressources.getFont("menuFont"));
 	text.setCharacterSize(40);
 	text.setStyle(sf::Text::Bold);

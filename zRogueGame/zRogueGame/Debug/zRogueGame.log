@@ -1,3 +1,7 @@
-﻿  PlayState.cpp
-  zRogueGame.vcxproj -> C:\Users\Amine\Desktop\zRogueGame\zRogueGame\Debug\zRogueGame.exe
-  zRogueGame.vcxproj -> C:\Users\Amine\Desktop\zRogueGame\zRogueGame\Debug\zRogueGame.pdb (Partial PDB)
+﻿  Player.cpp
+  Génération de code en cours...
+  Ignoré... (aucune modification pertinente détectée)
+  PlayState.cpp
+  MenuState.cpp
+  Enemy.cpp
+LINK : fatal error LNK1201: erreur lors de l'écriture dans la base de données 'C:\Users\adai11\Desktop\zRogueGame\zRogueGame\Debug\zRogueGame.pdb' du programme ; vérifiez l'espace disque, le chemin d'accès ou les privilèges
