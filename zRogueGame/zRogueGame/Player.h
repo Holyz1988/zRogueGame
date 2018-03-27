@@ -33,6 +33,7 @@ public:
 private:
 	//Vecteurs qui permettent de construire le tire du joueur
 	sf::Vector2f playerCenter;
+	//sf::Vector2f windowCenter;
 	sf::Vector2f mousePosition;
 	sf::Vector2f aimDirection;
 	sf::Vector2f aimDirectionNormalized;

@@ -17,7 +17,7 @@ public:
 private:
 	void pauseGame();
 
-	//void centerCamera();
+	void centerCamera();
 
 	//void updateVectors();
 	//void fireBullets();
@@ -34,8 +34,8 @@ private:
 	//enemies
 	Enemy mDragon;
 
-	Enemy mEnemy;
-	std::vector<Enemy> mEnemies;
+	Enemy mFireBall;
+	std::vector<Enemy> mFireBalls;
 
 	Enemy mOrc;
 	std::vector<Enemy> mOrcs;

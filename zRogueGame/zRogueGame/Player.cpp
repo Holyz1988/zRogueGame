@@ -97,6 +97,8 @@ void Player::losingHp(Enemy& enemy)
 	}
 }
 
+//Lorsque l'on clique gauche sur la souris, on charge les projectiles dans un vecteur
+//et on les détruit s'ils sortent de la fenêtre.
 void Player::fireBullets(sf::RenderWindow& window)
 {
 	timeAccumulator += bulletClock.restart().asSeconds(); // Accumule temps
@@ -119,11 +121,12 @@ void Player::fireBullets(sf::RenderWindow& window)
 			bullets[i].circle.getPosition().x > window.getSize().x ||
 			bullets[i].circle.getPosition().y > window.getSize().y)
 		{
-			bullets.erase(bullets.begin());
+			bullets.erase(bullets.begin()+ i);
 		}
 	}
 }
 
+//On déssine les projectiles joueur à l'écran
 void Player::drawBullets(sf::RenderWindow & window)
 {
 	for (size_t i = 0; i < bullets.size(); i++)
@@ -132,14 +135,19 @@ void Player::drawBullets(sf::RenderWindow & window)
 	}
 }
 
+//Permet de calculer la direction normalisé
 void Player::updateVectors(sf::RenderWindow& window)
 {
 	playerCenter = sf::Vector2f(rect.getPosition().x + rect.getSize().x / 2.f, rect.getPosition().y + rect.getSize().y / 2.f);
+	//std::cout << playerCenter.x << " " << playerCenter.y << std::endl;
+	//windowCenter = sf::Vector2f(window.getPosition().x / 2.f, window.getPosition().y / 2.f);
 	mousePosition = sf::Vector2f(sf::Mouse::getPosition(window));
 	aimDirection = mousePosition - playerCenter;
 	aimDirectionNormalized = aimDirection / (sqrt(pow(aimDirection.x, 2) + pow(aimDirection.y, 2)));
+	std::cout << aimDirectionNormalized.x << " " << aimDirectionNormalized.y << std::endl;
 }
 
+//Collision projectile joueur et projectile dragon
 void Player::bulletCollision(std::vector<Enemy>& enemies)
 {
 	for (size_t i = 0; i < bullets.size(); i++)
