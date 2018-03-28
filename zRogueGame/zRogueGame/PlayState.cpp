@@ -6,26 +6,29 @@ using namespace std;
 
 PlayState::PlayState(Game * game) : mOrc(sf::Vector2f(10.f, 10.f))
 {
+	//Chargement des murs
+
+
 	//Chargement du joueur
-	ressources.loadTexture("Player", "ressources/mainPlayer.png");
-	mPlayer.sprite.setTexture(ressources.getTexture("Player"));
+	mRessources.loadTexture("Player", "ressources/mainPlayer.png");
+	mPlayer.sprite.setTexture(mRessources.getTexture("Player"));
 	mPlayer.sprite.setTextureRect(sf::IntRect(0, 0, 32, 32));
 
 	//Chargement des dragons
-	ressources.loadTexture("Dragon", "ressources/Enemy_dragon2.png");
-	mDragon.sprite.setTexture(ressources.getTexture("Dragon"));
+	mRessources.loadTexture("Dragon", "ressources/Enemy_dragon2.png");
+	mDragon.sprite.setTexture(mRessources.getTexture("Dragon"));
 	mDragon.sprite.setTextureRect(sf::IntRect(0, 0, 128, 160));
 	mDragon.rect.setPosition(sf::Vector2f(200, 200));
 
 	//Chargement des orcs
-	ressources.loadTexture("Orc", "ressources/orc.png");
-	mOrc.sprite.setTexture(ressources.getTexture("Orc"));
+	mRessources.loadTexture("Orc", "ressources/orc.png");
+	mOrc.sprite.setTexture(mRessources.getTexture("Orc"));
 	mOrc.sprite.setTextureRect(sf::IntRect(0, 0, 64, 64));
 	mOrc.rect.setPosition(sf::Vector2f(100, 100));
 
 	//Chargement des boules de feux
-	ressources.loadTexture("Enemy1", "ressources/fireball.png");
-	mFireBall.sprite.setTexture(ressources.getTexture("Enemy1"));
+	mRessources.loadTexture("Enemy1", "ressources/fireball.png");
+	mFireBall.sprite.setTexture(mRessources.getTexture("Enemy1"));
 	mFireBall.sprite.setTextureRect(sf::IntRect(0, 4 * 64, 64, 64));
 	this->game = game;
 }
@@ -75,11 +78,12 @@ void PlayState::update(float dt)
 	mPlayer.update(dt);//Met à jour la position du joueur
 
 	//centerCamera();
-	//game->window.setView(Camera);
+	//game->window.setView(mCamera);
 }
 
 void PlayState::draw(float dt)
 {	
+	game->window.draw(this->mWall.rect);
 	game->window.draw(this->mPlayer.sprite);
 	mPlayer.drawBullets(game->window);
 	mFireBall.drawEnemies(mFireBalls, game->window);
@@ -94,8 +98,8 @@ void PlayState::pauseGame()
 
 void PlayState::centerCamera()
 {
-	this->Camera.setSize(sf::Vector2f(game->window.getSize().x, game->window.getSize().y));
-	this->Camera.setCenter(mPlayer.rect.getPosition());
+	this->mCamera.setSize(sf::Vector2f(game->window.getSize().x, game->window.getSize().y));
+	this->mCamera.setCenter(mPlayer.rect.getPosition());
 }
 
 

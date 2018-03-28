@@ -1,7 +1,10 @@
 #pragma once
-class Wall
+#include "Entity.h"
+
+class Wall : public Entity
 {
 public:
 	Wall();
+
 };
 

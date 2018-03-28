@@ -4,6 +4,7 @@
 #include "GameState.h"
 #include "Player.h"
 #include "Enemy.h"
+#include "Wall.h"
 
 class PlayState : public GameState
 {
@@ -24,11 +25,11 @@ private:
 	//void drawBullets();
 
 private:
-	sf::View Camera;
+	sf::View mCamera;
 
-	RessourceHolder ressources;
+	RessourceHolder mRessources;
 	sf::Sprite mSpritePlayer;
-	sf::Vector2f posPlayer;
+	sf::Vector2f mPosPlayer;
 	Player mPlayer;
 
 	//enemies
@@ -39,5 +40,9 @@ private:
 
 	Enemy mOrc;
 	std::vector<Enemy> mOrcs;
+
+	Wall mWall;
+	std::vector<Wall> mWalls;
+
 };
 
