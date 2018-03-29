@@ -3,10 +3,12 @@
 
 
 Projectile::Projectile() : Velocity(0.f, 0.f),
-						   mSpeed(20.f)
+						   mSpeed(5.f)
 {
-	this->circle.setRadius(7.f);
-	this->circle.setFillColor(sf::Color::Blue);
+	this->circle.setRadius(6.f);
+	this->circle.setFillColor(sf::Color::Color(255, 116, 14));
+	this->circle.setOutlineColor(sf::Color::Red);
+	this->circle.setOutlineThickness(0.8f);
 }
 
 sf::Vector2f Projectile::getVelocity()

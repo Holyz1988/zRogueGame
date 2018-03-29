@@ -7,7 +7,7 @@ const int WINDOW_HEIGHT = 600;
 //On démarre l'application
 Game::Game(  ) : window( sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Z Rogue like" )
 {
-	window.setFramerateLimit(60);
+	//window.setFramerateLimit(60);
 }
 
 //On détruit les pointeurs crée avec new

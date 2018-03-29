@@ -29,7 +29,7 @@ void RessourceHolder::loadFont(std::string  fontName, std::string  filename)
 	mFontMap.insert(std::pair<std::string, sf::Font>(fontName, font));
 }
 
-sf::Font & RessourceHolder::getFont(std::string  fontName)
+sf::Font& RessourceHolder::getFont(std::string  fontName)
 {
 	auto found = mFontMap.find(fontName);
 	return found->second;

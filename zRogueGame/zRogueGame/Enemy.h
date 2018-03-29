@@ -8,10 +8,12 @@ class Player;
 class Enemy : public Entity
 {
 public:
+	enum Direction { DOWN = 1, LEFT, RIGHT, TOP };
+
 	Enemy();
 	Enemy(sf::Vector2f velocity);
 
-	void updateMovement(std::vector<Enemy>& enemies, sf::RenderWindow& window);
+	void updateMovement(std::vector<Enemy>& enemies, sf::RenderWindow& window, float dt);
 	void spawnEnemies(std::vector<Enemy>& enemies, Enemy& enemy, Player& player);
 	void drawEnemies(std::vector<Enemy>& enemies, sf::RenderWindow& window);
 
@@ -19,9 +21,13 @@ public:
 	void updateV(Player& player);
 
 	void moveEnemies(float dt);
+	void moveEnemies(std::vector<Enemy>& enemies, Enemy & enemy, Player& player);
 
+	//GETTER & SETTER
 	void setVelocity(sf::Vector2f velocity);
 	sf::Vector2f getVelocity();
+
+	int getDamage();
 
 private:
 	sf::Clock clock;
@@ -32,6 +38,8 @@ private:
 	sf::Vector2f playerCenter;
 	sf::Vector2f aimDirection;
 	sf::Vector2f aimDirectionNormalized;
+
+	Direction mDirection = Direction::DOWN;
 
 	float timePassed; // Temps écouler
 	int currentFrame; // On comment à la 1ère frame

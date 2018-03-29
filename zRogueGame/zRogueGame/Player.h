@@ -3,6 +3,7 @@
 #include "RessourceHolder.h"
 #include "Projectile.h"
 #include "Enemy.h"
+#include "Wall.h"
 
 class Enemy;
 
@@ -12,10 +13,12 @@ public:
 	Player();
 
 	void update(float dt);
-	void fireBullets(sf::RenderWindow& window);
+	void fireBullets(sf::RenderWindow& window, std::vector<Wall> walls);
 	void drawBullets(sf::RenderWindow& window);
 	void updateVectors(sf::RenderWindow& window);
 	void bulletCollision(std::vector<Enemy>& enemies);
+
+	void wallCollision(std::vector<Wall>& walls);
 
 	void resetInvulnerableTimer();
 
@@ -27,14 +30,15 @@ public:
 
 	std::vector<Projectile> getBullets();
 
-	bool collideWithEnemy(Enemy& enemy);
+	bool colisionPlayerFireball(Enemy& enemy);
+	bool collisionBulletWall(Wall& wall);
 	void losingHp(Enemy& enemy);
 
 private:
 	//Vecteurs qui permettent de construire le tire du joueur
 	sf::Vector2f playerCenter;
-	//sf::Vector2f windowCenter;
-	sf::Vector2f mousePosition;
+	sf::Vector2f mouseWorldPosition;
+	sf::Vector2i mousePixelPosition;
 	sf::Vector2f aimDirection;
 	sf::Vector2f aimDirectionNormalized;
 
@@ -50,7 +54,7 @@ private:
 
 	float timePassed; // Temps écouler
 	int currentFrame = 0; // On comment à la 1ère frame
-	float mSpeed = 250.f; //100 pixels / secondes
+	float mSpeed = 150.f; //100 pixels / secondes
 	float switchTime = 0.3f; // Temps que prend une frame d'animation
 
 	float invulnerableTimer;

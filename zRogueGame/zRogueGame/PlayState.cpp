@@ -7,7 +7,7 @@ using namespace std;
 PlayState::PlayState(Game * game) : mOrc(sf::Vector2f(10.f, 10.f))
 {
 	//Chargement des murs
-
+	mWall.initArena(mWalls, mWall);
 
 	//Chargement du joueur
 	mRessources.loadTexture("Player", "ressources/mainPlayer.png");
@@ -60,7 +60,7 @@ void PlayState::update(float dt)
 	//Mise à jour des positions et actions enemies
 	mFireBall.spawnEnemies(mFireBalls, mFireBall, mPlayer);//Spawn les enemies
 	mFireBall.updateV(mPlayer);//MAJ des positions enemies
-	mFireBall.updateMovement(mFireBalls, game->window);//MAJ des mouvement enimies
+	mFireBall.updateMovement(mFireBalls, game->window, dt);//MAJ des mouvement enimies
 	mFireBall.updatePos();
 
 	//Mise à jour du dragon
@@ -73,16 +73,18 @@ void PlayState::update(float dt)
 	//Mise à jour des positions et actions du joueur
 	mPlayer.losingHp(mOrc);
 	mPlayer.bulletCollision(mFireBalls);
-	mPlayer.fireBullets(game->window);//MAJ des projectiles
+	mPlayer.fireBullets(game->window, mWalls);//MAJ des projectiles
 	mPlayer.updateVectors(game->window);//MAJ des positions joueur
 	mPlayer.update(dt);//Met à jour la position du joueur
 
-	//centerCamera();
-	//game->window.setView(mCamera);
+	//On place la caméra
+	centerCamera();
+	game->window.setView(mCamera);
 }
 
 void PlayState::draw(float dt)
 {	
+	mWall.drawArena(mWalls, game->window);
 	game->window.draw(this->mWall.rect);
 	game->window.draw(this->mPlayer.sprite);
 	mPlayer.drawBullets(game->window);
@@ -93,12 +95,12 @@ void PlayState::draw(float dt)
 
 void PlayState::pauseGame()
 {
-
+	//TODO
 }
 
 void PlayState::centerCamera()
 {
-	this->mCamera.setSize(sf::Vector2f(game->window.getSize().x, game->window.getSize().y));
+	this->mCamera.setSize(sf::Vector2f((float)game->window.getSize().x, (float)game->window.getSize().y));
 	this->mCamera.setCenter(mPlayer.rect.getPosition());
 }
 

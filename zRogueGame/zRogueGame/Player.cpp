@@ -1,16 +1,16 @@
 #include "Player.h"
 #include <iostream>
 
-Player::Player() : invulnerable(true)
+Player::Player() : invulnerable(false)
 {
 	this->currentHp = maxHP;
 	rect.setSize(sf::Vector2f(32.f, 32.f));
 	rect.setPosition(sf::Vector2f(200.f, 200.f));
 }
 
+//Met à jour la position du joueur
 void Player::update(float dt)
 {
-
 	//Permet de mettre la bonne frame toute les 0.175 secondes
 	timePassed += clock.restart().asSeconds();
 
@@ -23,8 +23,6 @@ void Player::update(float dt)
 			currentFrame = 0;
 		}
 	}
-
-
 	//Mouvement du joueur et animation
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 	{
@@ -46,8 +44,122 @@ void Player::update(float dt)
 		this->rect.move(0, -mSpeed * dt);
 		sprite.setTextureRect(sf::IntRect(currentFrame * 32, 3 * 32, 32, 32));
 	}
-
 	sprite.setPosition(rect.getPosition());
+}
+
+//Méthode qui test si il ya une collision entre un ennemi et le joueur
+bool Player::colisionPlayerFireball(Enemy& enemy)
+{
+
+	if (this->rect.getGlobalBounds().intersects(enemy.rect.getGlobalBounds()))
+	{
+		return true;
+	}
+	else
+		return false;
+}
+
+bool Player::collisionBulletWall(Wall& wall)
+{
+	if (bullet.rect.getGlobalBounds().intersects(wall.rect.getGlobalBounds()))
+		return true;
+	else
+		return false;
+}
+
+void Player::losingHp(Enemy& enemy)
+{
+	if (colisionPlayerFireball(enemy))
+	{
+		resetInvulnerableTimer();
+
+		if (!invulnerable) // 2 secondes d'invulnérabilités
+		{
+			this->currentHp -= enemy.getDamage();
+			invulnerable = true;
+			invulnerableTimer = 0;
+		}
+	}
+}
+
+//Lorsque l'on clique gauche sur la souris, on charge les projectiles dans un vecteur
+//et on les détruit s'ils sortent de la fenêtre.
+void Player::fireBullets(sf::RenderWindow& window, std::vector<Wall> walls)
+{
+	timeAccumulator += bulletClock.restart().asSeconds(); // Accumule temps
+														  //On charge et on tire
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && timeAccumulator > bulletDelay)
+	{
+		bullet.circle.setPosition(playerCenter);
+		bullet.setVelocity(aimDirectionNormalized * bullet.getSpeed());
+		bullets.push_back(bullet);
+		timeAccumulator = 0; // On remet à 0 le chrono.
+	}
+
+	wallCollision(walls);
+}
+
+//On déssine les projectiles joueur à l'écran
+void Player::drawBullets(sf::RenderWindow & window)
+{
+	for (size_t i = 0; i < bullets.size(); i++)
+	{
+		window.draw(bullets[i].circle);
+	}
+}
+
+//Permet de calculer la direction normalisé
+void Player::updateVectors(sf::RenderWindow& window)
+{
+	playerCenter = sf::Vector2f(rect.getPosition().x + rect.getSize().x / 2.f, rect.getPosition().y + rect.getSize().y / 2.f);
+	mousePixelPosition = sf::Mouse::getPosition(window);
+	mouseWorldPosition = window.mapPixelToCoords(mousePixelPosition);
+	aimDirection = mouseWorldPosition - playerCenter;
+	aimDirectionNormalized = aimDirection / (sqrt(pow(aimDirection.x, 2) + pow(aimDirection.y, 2)));
+}
+
+//Collision projectile joueur et projectile dragon
+void Player::bulletCollision(std::vector<Enemy>& enemies)
+{
+	for (size_t i = 0; i < bullets.size(); i++)
+	{
+		for (size_t j = 0; j < enemies.size(); j++)
+		{
+			if (enemies[j].rect.getGlobalBounds().intersects(bullets[i].circle.getGlobalBounds()))
+			{
+				enemies.erase(enemies.begin() + j);
+				bullets.erase(bullets.begin() + i);
+				break;
+			}
+		}
+	}
+}
+
+//Collision mur et tir du joueur
+void Player::wallCollision(std::vector<Wall>& walls)
+{
+	for (size_t i = 0; i < bullets.size(); i++)
+	{
+		bullets[i].circle.move(bullets[i].getVelocity());
+		for (size_t j = 0; j < walls.size(); j++)
+		{
+			if (walls[j].rect.getGlobalBounds().intersects(bullets[i].circle.getGlobalBounds()))
+			{
+				
+				bullets.erase(bullets.begin() + i);
+				break;
+			}
+		}
+	}
+}
+
+//Permet de retirer la vulnérabilité
+void Player::resetInvulnerableTimer()
+{
+	invulnerableTimer += invulnerableClock.restart().asSeconds();
+
+	if (invulnerableTimer > 2) // 2 secondes d'invulnérabilité
+		invulnerable = false;
 }
 
 int Player::getDamage()
@@ -69,112 +181,3 @@ std::vector<Projectile> Player::getBullets()
 {
 	return this->bullets;
 }
-
-//Méthode qui test si il ya une collision entre un ennemi et le joueur
-bool Player::collideWithEnemy(Enemy& enemy)
-{
-
-	if (this->rect.getGlobalBounds().intersects(enemy.rect.getGlobalBounds()))
-	{
-		return true;
-	}
-	else
-		return false;
-}
-
-void Player::losingHp(Enemy& enemy)
-{
-	if (collideWithEnemy(enemy))
-	{
-		resetInvulnerableTimer();
-
-		if (!invulnerable) // 2 secondes d'invulnérabilités
-		{
-			this->currentHp -= 10;
-			invulnerable = true;
-			invulnerableTimer = 0;
-		}
-	}
-}
-
-//Lorsque l'on clique gauche sur la souris, on charge les projectiles dans un vecteur
-//et on les détruit s'ils sortent de la fenêtre.
-void Player::fireBullets(sf::RenderWindow& window)
-{
-	timeAccumulator += bulletClock.restart().asSeconds(); // Accumule temps
-														  //On charge et on tire
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && timeAccumulator > bulletDelay)
-	{
-		bullet.circle.setPosition(playerCenter);
-		bullet.setVelocity(aimDirectionNormalized * bullet.getSpeed());
-		bullets.push_back(bullet);
-		timeAccumulator = 0; // On remet à 0 le chrono.
-	}
-
-	for (size_t i = 0; i < bullets.size(); i++)
-	{
-		bullets[i].circle.move(bullets[i].getVelocity());
-
-		//Si le projectile sors de l'écran, on le détruit.
-		if (bullets[i].circle.getPosition().x < 0 ||
-			bullets[i].circle.getPosition().y < 0 ||
-			bullets[i].circle.getPosition().x > window.getSize().x ||
-			bullets[i].circle.getPosition().y > window.getSize().y)
-		{
-			bullets.erase(bullets.begin()+ i);
-		}
-	}
-}
-
-//On déssine les projectiles joueur à l'écran
-void Player::drawBullets(sf::RenderWindow & window)
-{
-	for (size_t i = 0; i < bullets.size(); i++)
-	{
-		window.draw(bullets[i].circle);
-	}
-}
-
-//Permet de calculer la direction normalisé
-void Player::updateVectors(sf::RenderWindow& window)
-{
-	playerCenter = sf::Vector2f(rect.getPosition().x + rect.getSize().x / 2.f, rect.getPosition().y + rect.getSize().y / 2.f);
-	//std::cout << playerCenter.x << " " << playerCenter.y << std::endl;
-	//windowCenter = sf::Vector2f(window.getPosition().x / 2.f, window.getPosition().y / 2.f);
-	mousePosition = sf::Vector2f(sf::Mouse::getPosition(window));
-	aimDirection = mousePosition - playerCenter;
-	aimDirectionNormalized = aimDirection / (sqrt(pow(aimDirection.x, 2) + pow(aimDirection.y, 2)));
-	std::cout << aimDirectionNormalized.x << " " << aimDirectionNormalized.y << std::endl;
-}
-
-//Collision projectile joueur et projectile dragon
-void Player::bulletCollision(std::vector<Enemy>& enemies)
-{
-	for (size_t i = 0; i < bullets.size(); i++)
-	{
-		for (size_t j = 0; j < enemies.size(); j++)
-		{
-			if (enemies[j].rect.getGlobalBounds().intersects(bullets[i].circle.getGlobalBounds()))
-			{
-				enemies.erase(enemies.begin() + j);
-				bullets.erase(bullets.begin() + i);
-				break;
-			}
-		}
-
-	}
-}
-
-//Permet de retirer la vulnérabilité
-void Player::resetInvulnerableTimer()
-{
-	invulnerableTimer += invulnerableClock.restart().asSeconds();
-
-	if (invulnerableTimer > 2) // 2 secondes d'invulnérabilité
-		invulnerable = false;
-}
-
-
-
-
-
