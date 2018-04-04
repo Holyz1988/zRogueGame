@@ -1,15 +1,6 @@
-﻿  Wall.cpp
-  RessourceHolder.cpp
-  Projectile.cpp
-  PlayState.cpp
-  Player.cpp
-  OptionState.cpp
-  MenuState.cpp
-  main.cpp
-  Game.cpp
-  Entity.cpp
-  Enemy.cpp
-c:\users\adai11\desktop\zroguegame\zroguegame\zroguegame\enemy.cpp(78): warning C4244: 'argument' : conversion de 'time_t' en 'unsigned int', perte possible de données
+﻿  MenuState.cpp
   Génération de code en cours...
+  Ignoré... (aucune modification pertinente détectée)
+  PlayState.cpp
   zRogueGame.vcxproj -> C:\Users\adai11\Desktop\zRogueGame\zRogueGame\Debug\zRogueGame.exe
   zRogueGame.vcxproj -> C:\Users\adai11\Desktop\zRogueGame\zRogueGame\Debug\zRogueGame.pdb (Partial PDB)

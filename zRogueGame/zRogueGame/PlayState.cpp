@@ -6,7 +6,17 @@ using namespace std;
 
 PlayState::PlayState(Game * game) : mOrc(sf::Vector2f(10.f, 10.f))
 {
+	//Chargement du sol
+
+	mRessources.loadTexture("Ground", "ressources/tiles.png");
+	mTile.sprite.setTexture(mRessources.getTexture("Ground"));
+	mTile.sprite.setTextureRect(sf::IntRect(7 * 32, 32, 32, 32));
+	mTile.initGround(mGround, mTile);
+
 	//Chargement des murs
+	mRessources.loadTexture("Walls", "ressources/tiles.png");
+	mWall.sprite.setTexture(mRessources.getTexture("Walls"));
+	mWall.sprite.setTextureRect(sf::IntRect(3 * 32, 32, 32, 32));
 	mWall.initArena(mWalls, mWall);
 
 	//Chargement du joueur
@@ -85,6 +95,7 @@ void PlayState::update(float dt)
 void PlayState::draw(float dt)
 {	
 	mWall.drawArena(mWalls, game->window);
+	mTile.drawGround(mGround, game->window);
 	game->window.draw(this->mWall.rect);
 	game->window.draw(this->mPlayer.sprite);
 	mPlayer.drawBullets(game->window);

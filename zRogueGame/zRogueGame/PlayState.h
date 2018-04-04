@@ -17,7 +17,6 @@ public:
 
 private:
 	void pauseGame();
-
 	void centerCamera();
 
 	//void updateVectors();
@@ -32,17 +31,23 @@ private:
 	sf::Vector2f mPosPlayer;
 	Player mPlayer;
 
-	//enemies
+	//Dragon
 	Enemy mDragon;
 
+	//Boules de feu
 	Enemy mFireBall;
 	std::vector<Enemy> mFireBalls;
 
+	//Orcs
 	Enemy mOrc;
 	std::vector<Enemy> mOrcs;
 
+	//Murs
 	Wall mWall;
 	std::vector<Wall> mWalls;
 
+	//Sols
+	Wall mTile;
+	std::vector<Wall> mGround;
 };
 

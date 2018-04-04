@@ -22,13 +22,13 @@ public:
 
 	void resetInvulnerableTimer();
 
-	//Getters et Setters
+	//Accesseurs
 	int getDamage();
-	void setDamage(int damage);
-
 	int getCurrentHP();
-
 	std::vector<Projectile> getBullets();
+
+	//Setters
+	void setDamage(int damage);
 
 	bool colisionPlayerFireball(Enemy& enemy);
 	bool collisionBulletWall(Wall& wall);

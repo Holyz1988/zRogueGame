@@ -5,7 +5,7 @@ Player::Player() : invulnerable(false)
 {
 	this->currentHp = maxHP;
 	rect.setSize(sf::Vector2f(32.f, 32.f));
-	rect.setPosition(sf::Vector2f(200.f, 200.f));
+	rect.setPosition(sf::Vector2f(1000.f, 200.f));
 }
 
 //Met à jour la position du joueur
