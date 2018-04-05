@@ -52,10 +52,11 @@ private:
 
 	sf::Clock clock; // Horloge
 
+	//
 	float timePassed; // Temps écouler
-	int currentFrame = 0; // On comment à la 1ère frame
-	float mSpeed = 150.f; //100 pixels / secondes
 	float switchTime = 0.3f; // Temps que prend une frame d'animation
+
+	int currentFrame = 0; // On comment à la 1ère frame
 
 	float invulnerableTimer;
 
@@ -63,6 +64,7 @@ private:
 	int attackDamage = 5;
 	int currentHp;
 	int maxHP = 100;
+	float mSpeed = 150.f;
 	bool invulnerable;
 };
 

@@ -54,7 +54,7 @@ void Game::gameLoop( )
 		currentState( )->handleInput( );
 		currentState( )->update( dt );
 
-		window.clear( sf::Color::White );
+		window.clear( sf::Color::Black );
 
 		currentState( )->draw( dt );
 
