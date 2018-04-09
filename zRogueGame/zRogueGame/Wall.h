@@ -12,6 +12,8 @@ public:
 	void initGround(std::vector<Wall>& ground, Wall& tile);
 	void drawGround(std::vector<Wall>& ground, sf::RenderWindow& window);
 
+	void drawSpawner(Wall& tile,sf::RenderWindow& window);
+
 public:
 	sf::Texture mWallTexture;
 };

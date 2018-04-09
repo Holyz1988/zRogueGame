@@ -72,3 +72,12 @@ void Wall::drawGround(std::vector<Wall>& ground, sf::RenderWindow& window)
 	}
 }
 
+void Wall::drawSpawner(Wall & tile, sf::RenderWindow & window)
+{
+	//Taille de la tile du spawner
+	rect.setPosition(32 * 19, 32 * 7);
+	rect.setSize(sf::Vector2f(3 * 32, 3 * 32));
+	sprite.setPosition(rect.getPosition());
+	window.draw(sprite);
+}
+

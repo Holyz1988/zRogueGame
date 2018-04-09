@@ -1,7 +1,8 @@
 #include "Player.h"
 #include <iostream>
 
-Player::Player() : invulnerable(false)
+Player::Player() : invulnerable(false),
+mSpawnerStatus(false)
 {
 	this->currentHp = maxHP;
 	rect.setSize(sf::Vector2f(32.f, 32.f));
@@ -162,6 +163,14 @@ void Player::resetInvulnerableTimer()
 		invulnerable = false;
 }
 
+//Si le joueur a une collision avec le spawner
+//Fait apparaître les mobs
+void Player::spawnOrcs(Wall& spawnTile)
+{
+	if (rect.getGlobalBounds().intersects(spawnTile.rect.getGlobalBounds()))
+		mSpawnerStatus = true;
+}
+
 int Player::getDamage()
 {
 	return this->attackDamage;
@@ -180,4 +189,9 @@ int Player::getCurrentHP()
 std::vector<Projectile> Player::getBullets()
 {
 	return this->bullets;
+}
+
+bool Player::getSpawnerStatus()
+{
+	return this->mSpawnerStatus;
 }

@@ -8,16 +8,19 @@ PlayState::PlayState(Game * game) : mOrc(sf::Vector2f(10.f, 10.f))
 {
 	//Chargement du sol
 
-	mRessources.loadTexture("Ground", "ressources/tiles.png");
-	mTile.sprite.setTexture(mRessources.getTexture("Ground"));
+	mRessources.loadTexture("Tiles", "ressources/tiles.png");
+	mTile.sprite.setTexture(mRessources.getTexture("Tiles"));
 	mTile.sprite.setTextureRect(sf::IntRect(7 * 32, 32, 32, 32));
 	mTile.initGround(mGround, mTile);
 
 	//Chargement des murs
-	mRessources.loadTexture("Walls", "ressources/tiles.png");
-	mWall.sprite.setTexture(mRessources.getTexture("Walls"));
+	mWall.sprite.setTexture(mRessources.getTexture("Tiles"));
 	mWall.sprite.setTextureRect(sf::IntRect(3 * 32, 32, 32, 32));
 	mWall.initArena(mWalls, mWall);
+
+	//Chargement du spawner mob
+	mSpawnTile.sprite.setTexture(mRessources.getTexture("Tiles"));
+	mSpawnTile.sprite.setTextureRect(sf::IntRect(3 * 32, 5 * 32, 3 * 32, 3 * 32));
 
 	//Chargement du joueur
 	mRessources.loadTexture("Player", "ressources/mainPlayer.png");
@@ -34,7 +37,7 @@ PlayState::PlayState(Game * game) : mOrc(sf::Vector2f(10.f, 10.f))
 	mRessources.loadTexture("Orc", "ressources/orc.png");
 	mOrc.sprite.setTexture(mRessources.getTexture("Orc"));
 	mOrc.sprite.setTextureRect(sf::IntRect(0, 0, 64, 64));
-	mOrc.rect.setPosition(sf::Vector2f(100, 100));
+	mOrc.spawEnemies(mOrcs, mOrc);
 
 	//Chargement des boules de feux
 	mRessources.loadTexture("Enemy1", "ressources/fireball.png");
@@ -68,7 +71,7 @@ void PlayState::handleInput()
 void PlayState::update(float dt)
 {
 	//Mise à jour des positions et actions enemies
-	mFireBall.spawnEnemies(mFireBalls, mFireBall, mPlayer);//Spawn les enemies
+	mFireBall.spawnFireBalls(mFireBalls, mFireBall, mPlayer);//Spawn les enemies
 	mFireBall.updateV(mPlayer);//MAJ des positions enemies
 	mFireBall.updateMovement(mFireBalls, game->window, dt);//MAJ des mouvement enimies
 	mFireBall.updatePos();
@@ -77,8 +80,11 @@ void PlayState::update(float dt)
 	mDragon.updatePos();
 
 	//Mise à jour de l'orc
-	mOrc.moveEnemies(dt);
-	mOrc.updatePos();
+	for (int i = 0; i < mOrcs.size(); i++)
+	{
+		mOrcs[i].moveEnemies(dt);
+		mOrcs[i].updatePos();
+	}
 
 	//Mise à jour des positions et actions du joueur
 	mPlayer.losingHp(mOrc);
@@ -94,14 +100,26 @@ void PlayState::update(float dt)
 
 void PlayState::draw(float dt)
 {	
+	//On déssine le monde
 	mWall.drawArena(mWalls, game->window);
 	mTile.drawGround(mGround, game->window);
-	game->window.draw(this->mWall.rect);
+	//game->window.draw(this->mWall.rect);
+	mSpawnTile.drawSpawner(mSpawnTile, game->window);
+
+	//On déssine le joueur et les boules
 	game->window.draw(this->mPlayer.sprite);
 	mPlayer.drawBullets(game->window);
-	mFireBall.drawEnemies(mFireBalls, game->window);
-	game->window.draw(this->mDragon.sprite);
-	game->window.draw(this->mOrc.sprite);
+
+	//Boules de feux
+	//mFireBall.drawEnemies(mFireBalls, game->window);
+
+	//Dragon
+	//game->window.draw(this->mDragon.sprite);
+
+	//Orcs
+	mPlayer.spawnOrcs(mSpawnTile);
+	if (mPlayer.getSpawnerStatus())
+		mOrc.drawEnemies(mOrcs, this->game->window);
 }
 
 void PlayState::pauseGame()

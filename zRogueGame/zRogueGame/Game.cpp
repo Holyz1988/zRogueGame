@@ -17,7 +17,7 @@ Game::~Game( )
 		popState();
 }
 
-void Game::pushState( GameState * state )
+void Game::pushState( GameState*  state )
 {
 	states.push_back( state );
 }
@@ -60,9 +60,4 @@ void Game::gameLoop( )
 
 		window.display( );
 	}
-}
-
-void Game::previousState()
-{
-	states.pop_back();
 }

@@ -24,7 +24,8 @@ void OptionState::handleInput()
 		}
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
-			loadMenu();
+			game->previousState();
+			//loadMenu();
 	}
 }
 

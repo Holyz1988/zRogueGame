@@ -22,10 +22,14 @@ public:
 
 	void resetInvulnerableTimer();
 
+	//actionne le spawn des mobs
+	void spawnOrcs(Wall& spawnTile);
+
 	//Accesseurs
 	int getDamage();
 	int getCurrentHP();
 	std::vector<Projectile> getBullets();
+	bool getSpawnerStatus();
 
 	//Setters
 	void setDamage(int damage);
@@ -33,6 +37,7 @@ public:
 	bool colisionPlayerFireball(Enemy& enemy);
 	bool collisionBulletWall(Wall& wall);
 	void losingHp(Enemy& enemy);
+	
 
 private:
 	//Vecteurs qui permettent de construire le tire du joueur
@@ -66,5 +71,8 @@ private:
 	int maxHP = 100;
 	float mSpeed = 150.f;
 	bool invulnerable;
+
+	//Spawn
+	bool mSpawnerStatus;
 };
 

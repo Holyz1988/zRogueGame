@@ -2,6 +2,7 @@
 
 #include <SFML\Graphics.hpp>
 #include <vector>
+#include <stack>
 #include <memory>
 
 class GameState;
@@ -16,8 +17,6 @@ public:
 	void pushState(GameState* state);
 	void popState();
 
-	void previousState();
-
 	//Méthode qui permet de récupérer notre état actuel (pointeur obligatoire)
 	GameState* currentState();
 
@@ -27,6 +26,6 @@ public:
 	sf::RenderWindow window;
 
 private:
-	std::vector<GameState*> states;
+	std::stack<std::unique_ptr<GameState>> states;
 };
 

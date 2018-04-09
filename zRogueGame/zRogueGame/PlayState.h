@@ -49,5 +49,8 @@ private:
 	//Sols
 	Wall mTile;
 	std::vector<Wall> mGround;
+
+	//Zone de spawn
+	Wall mSpawnTile;
 };
 
