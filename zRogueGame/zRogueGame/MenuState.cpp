@@ -3,10 +3,12 @@
 #include "OptionState.h"
 #include <iostream>
 
-#include <iostream>
+MenuState::MenuState(GameDataRef data) : _data(data)
+{
 
+}
 
-MenuState::MenuState(Game* game)
+void MenuState::init()
 {
 	//On charge l'image de fond
 	ressources.loadTexture("menuButton", "ressources/menu_background.png");
@@ -31,7 +33,7 @@ MenuState::MenuState(Game* game)
 	sf::FloatRect titleRect = mTitle.getLocalBounds();
 	mTitle.setOrigin(titleRect.left + titleRect.width / 2.0f,
 					 titleRect.top + titleRect.height / 2.0f);
-	mTitle.setPosition(sf::Vector2f(game->window.getSize().x / 2.0f, 100));
+	mTitle.setPosition(sf::Vector2f(this->_data->window.getSize().x / 2.0f, 100));
 
 	//on remplit notre vecteur de bouttons
 	mButtons.push_back(text);
@@ -49,25 +51,25 @@ MenuState::MenuState(Game* game)
 		sf::FloatRect buttonRect = mButtons[i].getLocalBounds();
 		mButtons[i].setOrigin(buttonRect.left + buttonRect.width / 2.0f,
 							  titleRect.top + titleRect.height / 2.0f);
-		mButtons[i].setPosition(sf::Vector2f(game->window.getSize().x / 2.0f, 300.f + (i * 65.f)));
+		mButtons[i].setPosition(sf::Vector2f(this->_data->window.getSize().x / 2.0f, 300.f + (i * 65.f)));
 	}
-
-	this->game = game;
 }
+
+
 
 void MenuState::handleInput()
 {
 	sf::Event event;
-	while (game->window.pollEvent(event))
+	while (this->_data->window.pollEvent(event))
 	{
 		switch (event.type)
 		{
 		case sf::Event::Closed:
-			game->window.close();
+			this->_data->window.close();
 			break;
 		case sf::Event::KeyPressed:
 			if (event.key.code == sf::Keyboard::Escape)
-				game->window.close();
+				this->_data->window.close();
 			else if (event.key.code == sf::Keyboard::Return)
 				loadGame();
 			break;
@@ -89,7 +91,7 @@ void MenuState::handleInput()
 				}
 				else if (isTextClicked(mButtons[2]))
 				{
-					game->window.close();
+					this->_data->window.close();
 				}
 			}
 		}
@@ -103,24 +105,24 @@ void MenuState::update(float dt)
 
 void MenuState::draw(float dt)
 {
-	game->window.draw(menuSprite);
-	game->window.draw(mTitle);
+	this->_data->window.draw(menuSprite);
+	this->_data->window.draw(mTitle);
 
 	for (unsigned int i = 0; i < mButtons.size(); i++)
 	{
-		game->window.draw(mButtons[i]);
+		this->_data->window.draw(mButtons[i]);
 	}
 }
 
 void MenuState::loadGame()
 {
 	//Chargement de l'état menu
-	game->pushState(new PlayState(game));
+	this->_data->machine.addState(StateRef(new PlayState(this->_data)), true);
 }
 
 void MenuState::loadOptions()
 {
-	game->pushState(new OptionState(game));
+	this->_data->machine.addState(StateRef(new OptionState(this->_data)), false);
 }
 
 bool MenuState::isTextClicked(sf::Text& text)
@@ -128,7 +130,7 @@ bool MenuState::isTextClicked(sf::Text& text)
 	sf::FloatRect rect = text.getGlobalBounds();
 
 	//Si la souris se trouve sur le rectangle
-	if (rect.contains((float)sf::Mouse::getPosition(game->window).x, (float)sf::Mouse::getPosition(game->window).y))
+	if (rect.contains((float)sf::Mouse::getPosition(this->_data->window).x, (float)sf::Mouse::getPosition(this->_data->window).y))
 		return true;
 	else
 		return false;

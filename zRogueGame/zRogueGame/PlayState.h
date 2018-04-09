@@ -1,19 +1,20 @@
 #pragma once
-#include "PlayState.h"
+
 #include "MenuState.h"
-#include "GameState.h"
+#include "State.hpp"
 #include "Player.h"
 #include "Enemy.h"
 #include "Wall.h"
 
-class PlayState : public GameState
+class PlayState : public State
 {
 public:
-	PlayState(Game* game);
+	PlayState(GameDataRef data);
+	void init();
 
-	virtual void handleInput();
-	virtual void update(float dt);
-	virtual void draw(float dt);
+	void handleInput();
+	void update(float dt);
+	void draw(float dt);
 
 private:
 	void pauseGame();
@@ -24,6 +25,8 @@ private:
 	//void drawBullets();
 
 private:
+	GameDataRef _data;
+
 	sf::View mCamera;
 
 	RessourceHolder mRessources;

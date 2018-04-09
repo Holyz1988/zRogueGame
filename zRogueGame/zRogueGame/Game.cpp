@@ -1,63 +1,35 @@
 #include "Game.h"
-#include "GameState.h"
+#include "MenuState.h"
 
-const int WINDOW_WIDTH = 800;
-const int WINDOW_HEIGHT = 600;
 
-//On démarre l'application
-Game::Game(  ) : window( sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Z Rogue like" )
+
+Game::Game(int width, int height, std::string title)
 {
-	//window.setFramerateLimit(60);
+	this->_data->window.create(sf::VideoMode(width, height), title, sf::Style::Close | sf::Style::Titlebar);
+
+	this->_data->machine.addState(StateRef(new MenuState(this->_data)));
+
+	this->run();
 }
 
-//On détruit les pointeurs crée avec new
-Game::~Game( )
-{
-	while (!states.empty())
-		popState();
-}
-
-void Game::pushState( GameState*  state )
-{
-	states.push_back( state );
-}
-
-void Game::popState( )
-{
-	states.back();
-	delete states.back( );
-	states.pop_back();
-}
-
-//Renvoi le dernier élement du vecteur, donc le mode de jeu dans lequel on est.
-GameState * Game::currentState( )
-{
-	if ( states.empty( ) )
-		return nullptr;
-	else
-		return states.back( );
-}
-
-void Game::gameLoop( )
+void Game::run()
 {
 	sf::Clock clock;
 
-	while (window.isOpen())
+	while (this->_data->window.isOpen())
 	{
+		this->_data->machine.processStateChanges();
 		//Controle des FPS
 		float dt = clock.restart().asSeconds();
 
-		if ( currentState( ) == nullptr )
-			continue;
-
 		//Récupérer les saisies utilisateurs pendant l'état acutel de notre jeu (menu, maingame, pause, etc)
-		currentState( )->handleInput( );
-		currentState( )->update( dt );
+		this->_data->machine.getActiveState()->handleInput();
+		this->_data->machine.getActiveState()->update(dt);
 
-		window.clear( sf::Color::Black );
+		this->_data->window.clear(sf::Color::Black);
 
-		currentState( )->draw( dt );
+		this->_data->machine.getActiveState()->draw(dt);
 
-		window.display( );
+		this->_data->window.display();
 	}
 }

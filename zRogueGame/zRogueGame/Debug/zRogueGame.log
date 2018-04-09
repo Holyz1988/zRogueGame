@@ -1,5 +1,6 @@
-﻿  main.cpp
-  MenuState.cpp
-  Génération de code en cours...
+﻿  PlayState.cpp
+c:\users\amine\desktop\projet\zroguegame\zroguegame\zroguegame\playstate.cpp(87): warning C4018: '<' : incompatibilité signed/unsigned
+c:\users\amine\desktop\projet\zroguegame\zroguegame\zroguegame\playstate.cpp(132): warning C4244: 'initialisation' : conversion de 'unsigned int' en 'float', perte possible de données
+c:\users\amine\desktop\projet\zroguegame\zroguegame\zroguegame\playstate.cpp(133): warning C4244: 'initialisation' : conversion de 'unsigned int' en 'float', perte possible de données
   zRogueGame.vcxproj -> C:\Users\Amine\Desktop\PROJET\zRogueGame\zRogueGame\Debug\zRogueGame.exe
   zRogueGame.vcxproj -> C:\Users\Amine\Desktop\PROJET\zRogueGame\zRogueGame\Debug\zRogueGame.pdb (Partial PDB)

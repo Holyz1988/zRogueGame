@@ -3,29 +3,31 @@
 
 
 
-OptionState::OptionState(Game* game)
+OptionState::OptionState(GameDataRef data) : _data(data)
+{
+
+}
+
+void OptionState::init()
 {
 	optionScreen.loadTexture("optionBackground", "ressources/Space_Background.png");
 	optionBackground.setTexture(optionScreen.getTexture("optionBackground"));
-	this->game = game;
 }
-
 
 void OptionState::handleInput()
 {
 	sf::Event event;
-	while (game->window.pollEvent(event))
+	while (this->_data->window.pollEvent(event))
 	{
 		switch (event.type)
 		{
 		case sf::Event::Closed:
-			game->window.close();
+			this->_data->window.close();
 			break;
 		}
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
-			game->previousState();
-			//loadMenu();
+		if (event.key.code == sf::Keyboard::Escape)
+			this->_data->machine.removeState();
 	}
 }
 
@@ -35,13 +37,13 @@ void OptionState::update(float dt)
 
 void OptionState::draw(float dt)
 {
-	game->window.draw(optionBackground);
+	this->_data->window.draw(optionBackground);
 }
 
 void OptionState::loadMenu()
 {
 	//TODO : Arrache la mémoire, trouver une meilleur solution
-	game->previousState();
+	//this->_data->previousState();
 }
 
 bool OptionState::isTextClicked(sf::Text text)

@@ -1,16 +1,18 @@
 #pragma once
-#include "GameState.h"
+#include "State.hpp"
+#include "MenuState.h"
 #include "RessourceHolder.h"
 #include <vector>
 
-class OptionState : public GameState
+class OptionState : public State
 {
 public:
-	OptionState(Game* game);
+	OptionState(GameDataRef data);
+	void init();
 
-	virtual void handleInput();
-	virtual void update(float dt);
-	virtual void draw(float dt);
+	void handleInput();
+	void update(float dt);
+	void draw(float dt);
 
 private:
 	//Permet de passer du menu au jeu principal
@@ -19,6 +21,8 @@ private:
 	void changeTextDesign(std::vector<sf::Text>& buttons);
 
 private:
+	GameDataRef _data;
+
 	RessourceHolder optionScreen;
 	sf::Sprite optionBackground;
 

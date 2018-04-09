@@ -1,13 +1,10 @@
 #include "Game.h"
-#include "MenuState.h"
 
 int main()
 {
-	Game game;
+	Game game(800, 600, "zPainGame");
 
-	game.pushState(new MenuState(&game));
-
-	game.gameLoop();
+	game.run();
 
 	return 0;
 }

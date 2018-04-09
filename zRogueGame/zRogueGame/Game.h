@@ -1,31 +1,28 @@
 #pragma once
-
-#include <SFML\Graphics.hpp>
-#include <vector>
-#include <stack>
 #include <memory>
+#include <string>
+#include "SFML\Graphics.hpp"
+#include "StateMachine.h"
 
-class GameState;
+struct GameData
+{
+	StateMachine machine;
+	sf::RenderWindow window;
+};
+
+typedef std::shared_ptr<GameData> GameDataRef;
 
 class Game
 {
 public:
-	Game();
-	~Game();
-
-	//Fonction pour changer l'état du jeu
-	void pushState(GameState* state);
-	void popState();
-
-	//Méthode qui permet de récupérer notre état actuel (pointeur obligatoire)
-	GameState* currentState();
-
-	//La boucle de jeu
-	void gameLoop();
-
-	sf::RenderWindow window;
+	Game(int width, int height, std::string title);
+	void run();
 
 private:
-	std::stack<std::unique_ptr<GameState>> states;
+	const float dt = 1 / 60.0f;
+	sf::Clock _clock;
+
+	GameDataRef _data = std::make_shared<GameData>();
 };
+
 
