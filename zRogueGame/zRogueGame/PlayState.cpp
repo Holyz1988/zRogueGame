@@ -11,8 +11,8 @@ PlayState::PlayState(GameDataRef data) : _data(data)
 //: mOrc(sf::Vector2f(10.f, 10.f))
 void PlayState::init()
 {
+	srand(time(NULL));
 	//Chargement du sol
-
 	mRessources.loadTexture("Tiles", "ressources/tiles.png");
 	mTile.sprite.setTexture(mRessources.getTexture("Tiles"));
 	mTile.sprite.setTextureRect(sf::IntRect(7 * 32, 32, 32, 32));
@@ -42,7 +42,6 @@ void PlayState::init()
 	mRessources.loadTexture("Orc", "ressources/orc.png");
 	mOrc.sprite.setTexture(mRessources.getTexture("Orc"));
 	mOrc.sprite.setTextureRect(sf::IntRect(0, 0, 64, 64));
-	mOrc.spawEnemies(mOrcs, mOrc);
 
 	//Chargement des boules de feux
 	mRessources.loadTexture("Enemy1", "ressources/fireball.png");
@@ -83,6 +82,9 @@ void PlayState::update(float dt)
 	//Mise à jour du dragon
 	mDragon.updatePos();
 
+	//Spawn oircs
+	if (mPlayer.getSpawnerStatus() && sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+		mOrc.spawEnemies(mOrcs, mOrc);
 	//Mise à jour de l'orc
 	for (int i = 0; i < mOrcs.size(); i++)
 	{
@@ -91,11 +93,11 @@ void PlayState::update(float dt)
 	}
 
 	//Mise à jour des positions et actions du joueur
-	mPlayer.losingHp(mOrc);
-	mPlayer.bulletCollision(mFireBalls);
+	mPlayer.losingHp(mOrcs);
+	mPlayer.fireBallBulletCollision(mFireBalls);
 	mPlayer.fireBullets(this->_data->window, mWalls);//MAJ des projectiles
 	mPlayer.updateVectors(this->_data->window);//MAJ des positions joueur
-	mPlayer.update(dt);//Met à jour la position du joueur
+	mPlayer.update(dt, mWalls);//Met à jour la position du joueur
 
 	//On place la caméra
 	centerCamera();
@@ -145,3 +147,4 @@ void PlayState::centerCamera()
 }
 
 
+//TODO LES MOBS ENLEVE DES HP MEME QUAND ILS NE SONT PAS SPAWN, FAIRE EN SORTE DE LES DESACTIVER QUAND IL NE SONT PAS DESSINER

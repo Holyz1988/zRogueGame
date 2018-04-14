@@ -137,9 +137,9 @@ void Enemy::moveEnemies(float dt)
 	}
 }
 
+//Fait apparaître les enemies à l'écran
 void Enemy::spawEnemies(std::vector<Enemy>& enemies, Enemy& enemy)
 {
-	srand(time(NULL));
 	for (int i = 0; i < INITIAL_ENEMY_NUMBER; i++)
 	{
 		enemy.rect.setPosition((rand() % (32 * 38)) + 32, (rand() % (32 * 13)) + 32);

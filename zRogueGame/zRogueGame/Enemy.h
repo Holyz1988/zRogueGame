@@ -52,6 +52,7 @@ private:
 	int mSpawnCounter;
 
 	int attackDamage;
+	int currentHp;
 	int maxHP;
 };
 

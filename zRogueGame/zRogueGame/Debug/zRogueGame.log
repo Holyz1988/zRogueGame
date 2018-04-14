@@ -1,6 +1,17 @@
-﻿  PlayState.cpp
-c:\users\amine\desktop\projet\zroguegame\zroguegame\zroguegame\playstate.cpp(87): warning C4018: '<' : incompatibilité signed/unsigned
-c:\users\amine\desktop\projet\zroguegame\zroguegame\zroguegame\playstate.cpp(132): warning C4244: 'initialisation' : conversion de 'unsigned int' en 'float', perte possible de données
-c:\users\amine\desktop\projet\zroguegame\zroguegame\zroguegame\playstate.cpp(133): warning C4244: 'initialisation' : conversion de 'unsigned int' en 'float', perte possible de données
+﻿  Enemy.cpp
+c:\users\amine\desktop\projet\zroguegame\zroguegame\zroguegame\enemy.cpp(22): warning C4244: 'argument' : conversion de 'time_t' en 'unsigned int', perte possible de données
+c:\users\amine\desktop\projet\zroguegame\zroguegame\zroguegame\enemy.cpp(38): warning C4244: 'argument' : conversion de 'time_t' en 'unsigned int', perte possible de données
+c:\users\amine\desktop\projet\zroguegame\zroguegame\zroguegame\enemy.cpp(145): warning C4244: 'argument' : conversion de 'int' en 'float', perte possible de données
+  Génération de code en cours...
+  Compilation en cours...
+  Player.cpp
+c:\users\amine\desktop\projet\zroguegame\zroguegame\zroguegame\player.cpp(87): warning C4018: '<' : incompatibilité signed/unsigned
+  PlayState.cpp
+c:\users\amine\desktop\projet\zroguegame\zroguegame\zroguegame\playstate.cpp(14): warning C4244: 'argument' : conversion de 'time_t' en 'unsigned int', perte possible de données
+c:\users\amine\desktop\projet\zroguegame\zroguegame\zroguegame\playstate.cpp(89): warning C4018: '<' : incompatibilité signed/unsigned
+c:\users\amine\desktop\projet\zroguegame\zroguegame\zroguegame\playstate.cpp(134): warning C4244: 'initialisation' : conversion de 'unsigned int' en 'float', perte possible de données
+c:\users\amine\desktop\projet\zroguegame\zroguegame\zroguegame\playstate.cpp(135): warning C4244: 'initialisation' : conversion de 'unsigned int' en 'float', perte possible de données
+  MenuState.cpp
+  Génération de code en cours...
   zRogueGame.vcxproj -> C:\Users\Amine\Desktop\PROJET\zRogueGame\zRogueGame\Debug\zRogueGame.exe
   zRogueGame.vcxproj -> C:\Users\Amine\Desktop\PROJET\zRogueGame\zRogueGame\Debug\zRogueGame.pdb (Partial PDB)

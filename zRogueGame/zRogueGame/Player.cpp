@@ -1,5 +1,8 @@
 #include "Player.h"
 #include <iostream>
+#include <string>
+
+using namespace std;
 
 Player::Player() : invulnerable(false),
 mSpawnerStatus(false)
@@ -10,8 +13,13 @@ mSpawnerStatus(false)
 }
 
 //Met à jour la position du joueur
-void Player::update(float dt)
+//Gère l'animation du joueur
+//Gère les collisions
+//Met à jour le sprite et le rectangle du joueur
+void Player::update(float dt, std::vector<Wall>& walls)
 {
+	sf::Vector2f previousPos(rect.getPosition());
+
 	//Permet de mettre la bonne frame toute les 0.175 secondes
 	timePassed += clock.restart().asSeconds();
 
@@ -45,10 +53,14 @@ void Player::update(float dt)
 		this->rect.move(0, -mSpeed * dt);
 		sprite.setTextureRect(sf::IntRect(currentFrame * 32, 3 * 32, 32, 32));
 	}
+	
+	//Arrête le joueur quand il croise un mur
+	wallCollision(walls, previousPos);
+	
 	sprite.setPosition(rect.getPosition());
 }
 
-//Méthode qui test si il ya une collision entre un ennemi et le joueur
+//Test si il y a une collision entre un ennemi et le joueur
 bool Player::colisionPlayerFireball(Enemy& enemy)
 {
 
@@ -60,6 +72,7 @@ bool Player::colisionPlayerFireball(Enemy& enemy)
 		return false;
 }
 
+//Test si il y a une collision entre un mur et le joueur
 bool Player::collisionBulletWall(Wall& wall)
 {
 	if (bullet.rect.getGlobalBounds().intersects(wall.rect.getGlobalBounds()))
@@ -68,17 +81,41 @@ bool Player::collisionBulletWall(Wall& wall)
 		return false;
 }
 
-void Player::losingHp(Enemy& enemy)
+//Collision entre tous les murs de l'arène est le joueur
+void Player::wallCollision(std::vector<Wall>& walls, sf::Vector2f previousPos)
 {
-	if (colisionPlayerFireball(enemy))
+	for (int i = 0; i < walls.size(); i++)
 	{
-		resetInvulnerableTimer();
-
-		if (!invulnerable) // 2 secondes d'invulnérabilités
+		if (walls[i].rect.getGlobalBounds().intersects(this->rect.getGlobalBounds()))
 		{
-			this->currentHp -= enemy.getDamage();
-			invulnerable = true;
-			invulnerableTimer = 0;
+			rect.setPosition(previousPos);
+		}
+	}
+}
+
+
+void Player::losingHp(std::vector<Enemy>& enemy)
+{
+	//On commence par vérifier si le temps d'invulnérabilité est passé
+	resetInvulnerableTimer();
+
+	for (unsigned i = 0; i < enemy.size(); i++)
+	{
+		if (!invulnerable)
+			sprite.setColor(sf::Color(255, 255, 255, 255));//Remet la couleur du sprite d'origine 
+
+		if (colisionPlayerFireball(enemy[i]))
+		{
+			if (!invulnerable) // 2 secondes d'invulnérabilités
+			{
+				this->currentHp -= enemy[i].getDamage();
+				invulnerable = true;
+				invulnerableTimer = 0;
+			}
+			else
+			{
+				sprite.setColor(sf::Color(255, 0, 0, 255));//Change la couleur du sprite à rouge
+			}
 		}
 	}
 }
@@ -97,7 +134,7 @@ void Player::fireBullets(sf::RenderWindow& window, std::vector<Wall> walls)
 		timeAccumulator = 0; // On remet à 0 le chrono.
 	}
 
-	wallCollision(walls);
+	bulletWallCollision(walls);
 }
 
 //On déssine les projectiles joueur à l'écran
@@ -120,7 +157,7 @@ void Player::updateVectors(sf::RenderWindow& window)
 }
 
 //Collision projectile joueur et projectile dragon
-void Player::bulletCollision(std::vector<Enemy>& enemies)
+void Player::fireBallBulletCollision(std::vector<Enemy>& enemies)
 {
 	for (size_t i = 0; i < bullets.size(); i++)
 	{
@@ -137,7 +174,7 @@ void Player::bulletCollision(std::vector<Enemy>& enemies)
 }
 
 //Collision mur et tir du joueur
-void Player::wallCollision(std::vector<Wall>& walls)
+void Player::bulletWallCollision(std::vector<Wall>& walls)
 {
 	for (size_t i = 0; i < bullets.size(); i++)
 	{
@@ -146,7 +183,6 @@ void Player::wallCollision(std::vector<Wall>& walls)
 		{
 			if (walls[j].rect.getGlobalBounds().intersects(bullets[i].circle.getGlobalBounds()))
 			{
-				
 				bullets.erase(bullets.begin() + i);
 				break;
 			}
@@ -154,13 +190,18 @@ void Player::wallCollision(std::vector<Wall>& walls)
 	}
 }
 
+
+
 //Permet de retirer la vulnérabilité
 void Player::resetInvulnerableTimer()
 {
 	invulnerableTimer += invulnerableClock.restart().asSeconds();
 
-	if (invulnerableTimer > 2) // 2 secondes d'invulnérabilité
+	// 2 secondes d'invulnérabilité
+	if (invulnerableTimer > 2)
+	{
 		invulnerable = false;
+	}
 }
 
 //Si le joueur a une collision avec le spawner

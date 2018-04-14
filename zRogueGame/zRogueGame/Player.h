@@ -12,13 +12,10 @@ class Player : public Entity
 public:
 	Player();
 
-	void update(float dt);
+	void update(float dt, std::vector<Wall>& walls);
 	void fireBullets(sf::RenderWindow& window, std::vector<Wall> walls);
 	void drawBullets(sf::RenderWindow& window);
 	void updateVectors(sf::RenderWindow& window);
-	void bulletCollision(std::vector<Enemy>& enemies);
-
-	void wallCollision(std::vector<Wall>& walls);
 
 	void resetInvulnerableTimer();
 
@@ -34,9 +31,12 @@ public:
 	//Setters
 	void setDamage(int damage);
 
+	void fireBallBulletCollision(std::vector<Enemy>& enemies);
+	void bulletWallCollision(std::vector<Wall>& walls);
 	bool colisionPlayerFireball(Enemy& enemy);
 	bool collisionBulletWall(Wall& wall);
-	void losingHp(Enemy& enemy);
+	void wallCollision(std::vector<Wall>& walls, sf::Vector2f previousPos);
+	void losingHp(std::vector<Enemy>& enemy);
 	
 
 private:
@@ -57,7 +57,6 @@ private:
 
 	sf::Clock clock; // Horloge
 
-	//
 	float timePassed; // Temps écouler
 	float switchTime = 0.3f; // Temps que prend une frame d'animation
 
