@@ -5,7 +5,7 @@
 #define VERTICAL_WALL 15
 #define BLOCK_SIZE 32
 
-Wall::Wall()
+Wall::Wall() : locked(false)
 {
 	rect.setSize(sf::Vector2f(32.f, 32.f));
 	rect.setPosition(sf::Vector2f(0.f, 0.f));

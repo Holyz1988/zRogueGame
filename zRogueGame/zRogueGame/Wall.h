@@ -16,5 +16,6 @@ public:
 
 public:
 	sf::Texture mWallTexture;
+	bool locked;
 };
 

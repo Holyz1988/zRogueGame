@@ -9,40 +9,159 @@
 
 using namespace std;
 
-Enemy::Enemy() : mVelocity(15.f, 15.f),
+Enemy::Enemy() : mVelocity(25.f, 25.f),
 mSpawnCounter(20),
 timeWalking(3),
 direction(1),
 mSpeed(400.f),
 switchTime(0.175f),
-currentFrame(0),
-attackDamage(10),
-maxHP(100)
+timePassed(0),
+currentFrame(0)
 {
-	srand(time(NULL));
-	rect.setSize(sf::Vector2f(64.f, 64.f));
-	rect.setFillColor(sf::Color::Color(255, 116, 14));
-	rect.setOutlineColor(sf::Color::Red);
-	rect.setOutlineThickness(0.4f);
+	this->level = 1;
+	this->experienceGiven = this->level * 8;
+	this->rect.setSize(sf::Vector2f(32.f, 50.f));
+	this->rect.setFillColor(sf::Color::White);
+	this->currency = 10;
+	this->maxHP = 100;
+	this->attackDamage = 5;
+	this->mSpeed = 250.f;
+	this->currentHp = maxHP;
 }
 
+Enemy::Enemy(Player& player) : mVelocity(25.f, 25.f),
+mSpawnCounter(20),
+timeWalking(3),
+direction(1),
+mSpeed(400.f),
+switchTime(0.175f),
+timePassed(0),
+currentFrame(0)
+{
+	this->level = player.level;
+	this->experienceGiven = level * 8;
+	this->rect.setSize(sf::Vector2f(32.f, 50.f));
+	this->rect.setFillColor(sf::Color::White);
+	this->currency = 10;
+	this->maxHP = 100;
+	this->attackDamage = 5;
+	this->mSpeed = 250.f;
+	this->currentHp = maxHP;
+}
+
+/*
 Enemy::Enemy(sf::Vector2f velocity) : mSpawnCounter(20),
 timeWalking(3),
 direction(1),
 mSpeed(10.f),
 switchTime(0.175f),
-currentFrame(0),
-attackDamage(10),
-maxHP(100)
+currentFrame(0)
 {
-	srand(time(NULL));
 	rect.setSize(sf::Vector2f(64.f, 64.f));
 	this->mVelocity = velocity;
 }
+*/
 
 void Enemy::updatePos()
 {
-	sprite.setPosition(rect.getPosition());
+	this->sprite.setPosition(this->rect.getPosition().x - 16, this->rect.getPosition().y - 17);
+}
+
+//Déssine les ennemies à l'écran 
+void Enemy::drawEnemies(std::vector<Enemy>& enemies, sf::RenderWindow& window)
+{
+	for (size_t i = 0; i < enemies.size(); i++)
+	{
+		//window.draw(enemies[i].rect);
+		window.draw(enemies[i].sprite);
+	}
+}
+
+void Enemy::wallCollision(std::vector<Wall>& walls, sf::Vector2f previousPos)
+{
+	for (int i = 0; i < walls.size(); i++)
+	{
+		if (walls[i].rect.getGlobalBounds().intersects(this->rect.getGlobalBounds()))
+		{
+			rect.setPosition(previousPos);
+		}
+	}
+}
+
+//ENEMI AI
+void Enemy::moveEnemies(float dt, std::vector<Wall>& walls)
+{
+	sf::Vector2f previousPos(rect.getPosition());
+	timePassed += clock.restart().asSeconds();
+
+	//On change de sprite toutes les 0.175 secondes
+	if (timePassed >= switchTime)
+	{
+		timePassed = 0;
+		currentFrame++;
+		if (currentFrame >= 9)
+		{
+			currentFrame = 0;
+		}
+	}
+
+	//Génére un nombre entre 1 et 4, pour définir la direction dans laquelle l'énnemi va se diriger
+	if (timeWalking > 3)
+	{
+		direction = (rand() % 4) + 1;
+	}
+	
+	mDirection = static_cast<Direction>(direction);
+
+	//L'énnemi se déplace pendant 3 secondes avant de changer de direction
+	if (timeWalking <= 3)
+	{
+		timeWalking += clockOrc.restart().asSeconds();
+		switch (mDirection)
+		{
+		case Direction::DOWN:
+			this->rect.move(0, mVelocity.y * dt);
+			this->sprite.setTextureRect(sf::IntRect(currentFrame * 64, 10 * 64, 64, 64));
+			break;	
+		case Direction::LEFT:
+			this->rect.move(-mVelocity.x * dt, 0);
+			this->sprite.setTextureRect(sf::IntRect(currentFrame * 64, 9 * 64, 64, 64));
+			break;
+		case Direction::RIGHT:
+			this->rect.move(mVelocity.x * dt, 0);
+			this->sprite.setTextureRect(sf::IntRect(currentFrame * 64, 11 * 64, 64, 64));
+			break;
+		case Direction::TOP:
+			this->rect.move(0, -mVelocity.y * dt);
+			this->sprite.setTextureRect(sf::IntRect(currentFrame * 64, 8 * 64, 64, 64));
+			break;
+		default:
+			break;
+		}
+	}
+	else
+	{
+		//Compte à rebours à 0
+		timeWalking = 0;
+	}
+
+	//Stop l'orc s'il rencontre un mur
+	wallCollision(walls, previousPos);
+
+	//Synchronise le rectangle et le sprite
+	updatePos();
+}
+
+//Fait apparaître les enemies à l'écran
+void Enemy::spawEnemies(std::vector<Enemy>& enemies, Enemy& enemy)
+{
+	for (int i = 0; i < INITIAL_ENEMY_NUMBER; i++)
+	{
+		enemy.rect.setPosition((rand() % (32 * 36)) + 32, (rand() % (32 * 10)) + 50);
+		enemy.sprite.setPosition(enemy.rect.getPosition());
+		enemy.clockOrc.restart();//on redemarre l'horloge pour l'animation
+		enemies.push_back(enemy);
+	}
 }
 
 //Permet de définir la trajectoire des boules de feu
@@ -70,83 +189,6 @@ void Enemy::spawnFireBalls(std::vector<Enemy>& fireBalls, Enemy& fireBall, Playe
 		mSpawnCounter = 0;
 	}
 }
-
-//Déssine les ennemies à l'écran 
-void Enemy::drawEnemies(std::vector<Enemy>& enemies, sf::RenderWindow& window)
-{
-	for (size_t i = 0; i < enemies.size(); i++)
-	{
-		window.draw(enemies[i].sprite);
-	}
-}
-
-//ENEMI AI
-void Enemy::moveEnemies(float dt)
-{
-	timePassed += clock.restart().asSeconds();
-
-	//On change de sprite toutes les 0.175 secondes
-	if (timePassed >= switchTime)
-	{
-		timePassed -= switchTime;
-		currentFrame++;
-		if (currentFrame >= 9)
-		{
-			currentFrame = 0;
-		}
-	}
-
-	//Génére un nombre entre 1 et 4, pour définir la direction dans laquelle l'énnemi va se diriger
-	if (timeWalking > 3)
-	{ 
-		direction = (rand() % 4) + 1;
-	}
-	
-	mDirection = static_cast<Direction>(direction);
-
-	//L'énnemi se déplace pendant 3 secondes avant de changer de direction
-	if (timeWalking <= 3)
-	{
-		timeWalking += clockOrc.restart().asSeconds();
-		switch (mDirection)
-		{
-		case Direction::DOWN:
-			rect.move(0, mVelocity.y * dt);
-			sprite.setTextureRect(sf::IntRect(currentFrame * 64, 10 * 64, 64, 64));
-			break;	
-		case Direction::LEFT:
-			rect.move(-mVelocity.x * dt, 0);
-			sprite.setTextureRect(sf::IntRect(currentFrame * 64, 9 * 64, 64, 64));
-			break;
-		case Direction::RIGHT:
-			rect.move(mVelocity.x * dt, 0);
-			sprite.setTextureRect(sf::IntRect(currentFrame * 64, 11 * 64, 64, 64));
-			break;
-		case Direction::TOP:
-			rect.move(0, -mVelocity.y * dt);
-			sprite.setTextureRect(sf::IntRect(currentFrame * 64, 8 * 64, 64, 64));
-			break;
-		default:
-			break;
-		}
-	}
-	else
-	{
-		//Compte à rebours à 0
-		timeWalking = 0;
-	}
-}
-
-//Fait apparaître les enemies à l'écran
-void Enemy::spawEnemies(std::vector<Enemy>& enemies, Enemy& enemy)
-{
-	for (int i = 0; i < INITIAL_ENEMY_NUMBER; i++)
-	{
-		enemy.rect.setPosition((rand() % (32 * 38)) + 32, (rand() % (32 * 13)) + 32);
-		enemies.push_back(enemy);
-	}
-}
-
 
 void Enemy::updateV(Player& player)
 {

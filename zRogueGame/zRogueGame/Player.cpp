@@ -7,9 +7,17 @@ using namespace std;
 Player::Player() : invulnerable(false),
 mSpawnerStatus(false)
 {
+	this->level = 1;
+	this->mCurrentExperience = 0;
+	this->mExperienceNeeded = this->level * 200;
+	this->currency = 0;
+	this->maxHP = 100;
+	this->attackDamage = 100;
+	this->mSpeed = 350.f;
 	this->currentHp = maxHP;
 	rect.setSize(sf::Vector2f(32.f, 32.f));
 	rect.setPosition(sf::Vector2f(1000.f, 200.f));
+	rect.setFillColor(sf::Color::White);
 }
 
 //Met à jour la position du joueur
@@ -18,6 +26,7 @@ mSpawnerStatus(false)
 //Met à jour le sprite et le rectangle du joueur
 void Player::update(float dt, std::vector<Wall>& walls)
 {
+	cout << mCurrentExperience << endl;
 	sf::Vector2f previousPos(rect.getPosition());
 
 	//Permet de mettre la bonne frame toute les 0.175 secondes
@@ -53,15 +62,15 @@ void Player::update(float dt, std::vector<Wall>& walls)
 		this->rect.move(0, -mSpeed * dt);
 		sprite.setTextureRect(sf::IntRect(currentFrame * 32, 3 * 32, 32, 32));
 	}
-	
+
 	//Arrête le joueur quand il croise un mur
 	wallCollision(walls, previousPos);
-	
+
 	sprite.setPosition(rect.getPosition());
 }
 
 //Test si il y a une collision entre un ennemi et le joueur
-bool Player::colisionPlayerFireball(Enemy& enemy)
+bool Player::fireBallCollision(Enemy& enemy)
 {
 
 	if (this->rect.getGlobalBounds().intersects(enemy.rect.getGlobalBounds()))
@@ -72,7 +81,7 @@ bool Player::colisionPlayerFireball(Enemy& enemy)
 		return false;
 }
 
-//Test si il y a une collision entre un mur et le joueur
+//Test si il y a une collision entre un mur et les projectiles
 bool Player::collisionBulletWall(Wall& wall)
 {
 	if (bullet.rect.getGlobalBounds().intersects(wall.rect.getGlobalBounds()))
@@ -93,6 +102,48 @@ void Player::wallCollision(std::vector<Wall>& walls, sf::Vector2f previousPos)
 	}
 }
 
+void Player::bulletOrcCollision(std::vector<Enemy>& orcs)
+{
+	for (size_t i = 0; i < bullets.size(); i++)
+	{
+		for (size_t j = 0; j < orcs.size(); j++)
+		{
+			if (orcs[j].rect.getGlobalBounds().intersects(bullets[i].circle.getGlobalBounds()))
+			{
+				//L'orc touché perds des hp
+				orcs[j].currentHp -= attackDamage;
+
+				if (orcs[j].currentHp <= 0)
+				{
+					orcs[j].currentHp = 0;
+					mCurrentExperience += orcs[j].experienceGiven;
+					currency += orcs[j].currency;
+					orcs.erase(orcs.begin() + j);
+				}
+
+				bullets.erase(bullets.begin() + i);
+				break;
+			}
+		}
+	}
+}
+
+//Collision projectile joueur et projectile dragon
+void Player::fireBallBulletCollision(std::vector<Enemy>& enemies)
+{
+	for (size_t i = 0; i < bullets.size(); i++)
+	{
+		for (size_t j = 0; j < enemies.size(); j++)
+		{
+			if (enemies[j].rect.getGlobalBounds().intersects(bullets[i].circle.getGlobalBounds()))
+			{
+				enemies.erase(enemies.begin() + j);
+				bullets.erase(bullets.begin() + i);
+				break;
+			}
+		}
+	}
+}
 
 void Player::losingHp(std::vector<Enemy>& enemy)
 {
@@ -104,7 +155,7 @@ void Player::losingHp(std::vector<Enemy>& enemy)
 		if (!invulnerable)
 			sprite.setColor(sf::Color(255, 255, 255, 255));//Remet la couleur du sprite d'origine 
 
-		if (colisionPlayerFireball(enemy[i]))
+		if (fireBallCollision(enemy[i]))
 		{
 			if (!invulnerable) // 2 secondes d'invulnérabilités
 			{
@@ -124,14 +175,14 @@ void Player::losingHp(std::vector<Enemy>& enemy)
 //et on les détruit s'ils sortent de la fenêtre.
 void Player::fireBullets(sf::RenderWindow& window, std::vector<Wall> walls)
 {
-	timeAccumulator += bulletClock.restart().asSeconds(); // Accumule temps
+	mTimeAccumulator += bulletClock.restart().asSeconds(); // Accumule temps
 														  //On charge et on tire
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && timeAccumulator > bulletDelay)
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && mTimeAccumulator > mBulletDelay)
 	{
-		bullet.circle.setPosition(playerCenter);
+		bullet.circle.setPosition(mPlayerCenter);
 		bullet.setVelocity(aimDirectionNormalized * bullet.getSpeed());
 		bullets.push_back(bullet);
-		timeAccumulator = 0; // On remet à 0 le chrono.
+		mTimeAccumulator = 0; // On remet à 0 le chrono.
 	}
 
 	bulletWallCollision(walls);
@@ -149,29 +200,14 @@ void Player::drawBullets(sf::RenderWindow & window)
 //Permet de calculer la direction normalisé
 void Player::updateVectors(sf::RenderWindow& window)
 {
-	playerCenter = sf::Vector2f(rect.getPosition().x + rect.getSize().x / 2.f, rect.getPosition().y + rect.getSize().y / 2.f);
-	mousePixelPosition = sf::Mouse::getPosition(window);
-	mouseWorldPosition = window.mapPixelToCoords(mousePixelPosition);
-	aimDirection = mouseWorldPosition - playerCenter;
+	mPlayerCenter = sf::Vector2f(rect.getPosition().x + rect.getSize().x / 2.f, rect.getPosition().y + rect.getSize().y / 2.f);
+	mMousePixelPosition = sf::Mouse::getPosition(window);
+	mMouseWorldPosition = window.mapPixelToCoords(mMousePixelPosition);
+	aimDirection = mMouseWorldPosition - mPlayerCenter;
 	aimDirectionNormalized = aimDirection / (sqrt(pow(aimDirection.x, 2) + pow(aimDirection.y, 2)));
 }
 
-//Collision projectile joueur et projectile dragon
-void Player::fireBallBulletCollision(std::vector<Enemy>& enemies)
-{
-	for (size_t i = 0; i < bullets.size(); i++)
-	{
-		for (size_t j = 0; j < enemies.size(); j++)
-		{
-			if (enemies[j].rect.getGlobalBounds().intersects(bullets[i].circle.getGlobalBounds()))
-			{
-				enemies.erase(enemies.begin() + j);
-				bullets.erase(bullets.begin() + i);
-				break;
-			}
-		}
-	}
-}
+
 
 //Collision mur et tir du joueur
 void Player::bulletWallCollision(std::vector<Wall>& walls)

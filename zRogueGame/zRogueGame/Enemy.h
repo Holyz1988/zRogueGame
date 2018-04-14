@@ -1,26 +1,29 @@
 #pragma once
-#include "Entity.h"
+#include "Character.h"
 #include "RessourceHolder.h"
 #include "Player.h"
+#include "Wall.h"
 
 class Player;
 
-class Enemy : public Entity
+class Enemy : public Character
 {
 public:
 	enum Direction { DOWN = 1, LEFT, RIGHT, TOP };
 
 	Enemy();
-	Enemy(sf::Vector2f velocity);
+	Enemy(Player& player);
+	//Enemy(sf::Vector2f velocity);
 
 	void updateMovement(std::vector<Enemy>& enemies, sf::RenderWindow& window, float dt);
 	void spawnFireBalls(std::vector<Enemy>& enemies, Enemy& enemy, Player& player);
 	void drawEnemies(std::vector<Enemy>& enemies, sf::RenderWindow& window);
+	void wallCollision(std::vector<Wall>& walls, sf::Vector2f previousPos);
 
 	void updatePos();
 	void updateV(Player& player);
 
-	void moveEnemies(float dt);
+	void moveEnemies(float dt, std::vector<Wall>& walls);
 
 	void Enemy::spawEnemies(std::vector<Enemy>& enemies, Enemy& enemy);
 
@@ -30,9 +33,14 @@ public:
 
 	int getDamage();
 
+
+	
+	int experienceGiven;
+
 private:
 	sf::Clock clock;
 	sf::Clock clockOrc;
+	
 	sf::Vector2f mVelocity;
 	float mSpeed; //200 pixels / secondes
 
@@ -50,9 +58,5 @@ private:
 
 	float timeWalking;
 	int mSpawnCounter;
-
-	int attackDamage;
-	int currentHp;
-	int maxHP;
 };
 

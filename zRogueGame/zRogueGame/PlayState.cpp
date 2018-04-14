@@ -6,7 +6,7 @@ using namespace std;
 
 PlayState::PlayState(GameDataRef data) : _data(data)
 {
-
+	mOrc.level = mPlayer.level;
 }
 //: mOrc(sf::Vector2f(10.f, 10.f))
 void PlayState::init()
@@ -66,6 +66,17 @@ void PlayState::handleInput()
 		case sf::Event::KeyReleased:
 			if (event.key.code == sf::Keyboard::Escape)
 				pauseGame();
+
+		//Spawns orcs
+			if (event.key.code == sf::Keyboard::E)
+			{
+				if (mPlayer.getSpawnerStatus() && !mTile.locked)
+				{
+					mTile.locked = true;
+					mOrc.spawEnemies(mOrcs, mOrc);
+				}
+			}
+
 			break;
 		}
 	}
@@ -73,6 +84,11 @@ void PlayState::handleInput()
 
 void PlayState::update(float dt)
 {
+	//Faire une méthode
+	if (mOrcs.empty())
+	{
+		mTile.locked = false;
+	}
 	//Mise à jour des positions et actions enemies
 	mFireBall.spawnFireBalls(mFireBalls, mFireBall, mPlayer);//Spawn les enemies
 	mFireBall.updateV(mPlayer);//MAJ des positions enemies
@@ -82,14 +98,10 @@ void PlayState::update(float dt)
 	//Mise à jour du dragon
 	mDragon.updatePos();
 
-	//Spawn oircs
-	if (mPlayer.getSpawnerStatus() && sf::Keyboard::isKeyPressed(sf::Keyboard::E))
-		mOrc.spawEnemies(mOrcs, mOrc);
 	//Mise à jour de l'orc
-	for (int i = 0; i < mOrcs.size(); i++)
+	for (unsigned int i = 0; i < mOrcs.size(); i++)
 	{
-		mOrcs[i].moveEnemies(dt);
-		mOrcs[i].updatePos();
+		mOrcs[i].moveEnemies(dt, mWalls);
 	}
 
 	//Mise à jour des positions et actions du joueur
@@ -98,6 +110,7 @@ void PlayState::update(float dt)
 	mPlayer.fireBullets(this->_data->window, mWalls);//MAJ des projectiles
 	mPlayer.updateVectors(this->_data->window);//MAJ des positions joueur
 	mPlayer.update(dt, mWalls);//Met à jour la position du joueur
+	mPlayer.bulletOrcCollision(mOrcs); // Détruit le projectile joueur s'il rencontre un orc
 
 	//On place la caméra
 	centerCamera();
@@ -114,6 +127,7 @@ void PlayState::draw(float dt)
 
 	//On déssine le joueur et les boules
 	this->_data->window.draw(this->mPlayer.sprite);
+	//this->_data->window.draw(this->mPlayer.rect);
 	mPlayer.drawBullets(this->_data->window);
 
 	//Boules de feux
@@ -124,9 +138,9 @@ void PlayState::draw(float dt)
 
 	//Orcs
 	mPlayer.spawnOrcs(mSpawnTile);
-	if (mPlayer.getSpawnerStatus())
-		mOrc.drawEnemies(mOrcs, this->_data->window);
+	mOrc.drawEnemies(mOrcs, this->_data->window);
 }
+
 
 void PlayState::pauseGame()
 {
@@ -135,7 +149,6 @@ void PlayState::pauseGame()
 	float posY = this->_data->window.getSize().y;
 
 	this->mCamera.setCenter(sf::Vector2f(posX / 2, posY / 2));
-	cout << posX / 2 << ", " << posY / 2 << endl;
 	this->_data->machine.removeState();
 	this->_data->machine.addState(StateRef(new MenuState(this->_data)), true);
 }
@@ -146,5 +159,3 @@ void PlayState::centerCamera()
 	this->mCamera.setCenter(mPlayer.rect.getPosition());
 }
 
-
-//TODO LES MOBS ENLEVE DES HP MEME QUAND ILS NE SONT PAS SPAWN, FAIRE EN SORTE DE LES DESACTIVER QUAND IL NE SONT PAS DESSINER
