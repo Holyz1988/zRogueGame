@@ -3,7 +3,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#define INITIAL_ENEMY_NUMBER 10
+#define INITIAL_ENEMY_NUMBER 25
 #define BLOCK_SIZE 32
 #define BLOCK_NUMBER 40
 
@@ -24,7 +24,7 @@ currentFrame(0)
 	this->rect.setFillColor(sf::Color::White);
 	this->currency = 10;
 	this->maxHP = 100;
-	this->attackDamage = 5;
+	this->attackDamage = 100;
 	this->mSpeed = 250.f;
 	this->currentHp = maxHP;
 }

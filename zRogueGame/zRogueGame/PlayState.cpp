@@ -1,4 +1,6 @@
 #include "PlayState.h"
+#include "OptionState.h"
+#include "GameOverState.h"
 #include <iostream>
 #include <math.h>
 
@@ -7,6 +9,11 @@ using namespace std;
 PlayState::PlayState(GameDataRef data) : _data(data)
 {
 	mOrc.level = mPlayer.level;
+}
+
+PlayState::~PlayState()
+{
+
 }
 //: mOrc(sf::Vector2f(10.f, 10.f))
 void PlayState::init()
@@ -47,6 +54,9 @@ void PlayState::init()
 	mRessources.loadTexture("Enemy1", "ressources/fireball.png");
 	mFireBall.sprite.setTexture(mRessources.getTexture("Enemy1"));
 	mFireBall.sprite.setTextureRect(sf::IntRect(0, 4 * 64, 64, 64));
+
+	db = new Database();
+	db->openDatabase();
 }
 
 void PlayState::handleInput()
@@ -65,8 +75,11 @@ void PlayState::handleInput()
 			//pause game
 		case sf::Event::KeyReleased:
 			if (event.key.code == sf::Keyboard::Escape)
-				pauseGame();
-
+			{
+				db->insertPlayer(mPlayer);
+			}
+			break;
+		case sf::Event::KeyPressed:
 		//Spawns orcs
 			if (event.key.code == sf::Keyboard::E)
 			{
@@ -76,7 +89,6 @@ void PlayState::handleInput()
 					mOrc.spawEnemies(mOrcs, mOrc);
 				}
 			}
-
 			break;
 		}
 	}
@@ -84,11 +96,19 @@ void PlayState::handleInput()
 
 void PlayState::update(float dt)
 {
-	//Faire une méthode
+	cout << mPlayer.currentHp << endl;
+	//Ecran fin de partie si le joueur meurt
+	if (mPlayer.isDead())
+	{
+		this->_data->machine.addState(StateRef(new GameOverState(this->_data)), true);
+	}
+
+	//Si tous les orcs meurent, on libère le spawner de mob
 	if (mOrcs.empty())
 	{
 		mTile.locked = false;
 	}
+
 	//Mise à jour des positions et actions enemies
 	mFireBall.spawnFireBalls(mFireBalls, mFireBall, mPlayer);//Spawn les enemies
 	mFireBall.updateV(mPlayer);//MAJ des positions enemies
@@ -145,8 +165,8 @@ void PlayState::draw(float dt)
 void PlayState::pauseGame()
 {
 	//TODO
-	float posX = this->_data->window.getSize().x;
-	float posY = this->_data->window.getSize().y;
+	float posX = (float)this->_data->window.getSize().x;
+	float posY = (float)this->_data->window.getSize().y;
 
 	this->mCamera.setCenter(sf::Vector2f(posX / 2, posY / 2));
 	this->_data->machine.removeState();
@@ -157,5 +177,5 @@ void PlayState::centerCamera()
 {
 	this->mCamera.setSize(sf::Vector2f((float)this->_data->window.getSize().x, (float)this->_data->window.getSize().y));
 	this->mCamera.setCenter(mPlayer.rect.getPosition());
+	this->mCamera.zoom(1.f);
 }
-

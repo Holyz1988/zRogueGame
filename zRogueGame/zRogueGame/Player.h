@@ -21,6 +21,17 @@ public:
 
 	//actionne le spawn des mobs
 	void spawnOrcs(Wall& spawnTile);
+	void fireBallBulletCollision(std::vector<Enemy>& enemies);
+	void bulletWallCollision(std::vector<Wall>& walls);
+	bool fireBallCollision(Enemy& enemy);
+	bool collisionBulletWall(Wall& wall);
+	void wallCollision(std::vector<Wall>& walls, sf::Vector2f previousPos);
+	void bulletOrcCollision(std::vector<Enemy>& orcs);
+	void losingHp(std::vector<Enemy>& enemy);
+
+
+	void levelUp();
+	bool isDead();
 
 	//Accesseurs
 	int getDamage();
@@ -31,34 +42,24 @@ public:
 	//Setters
 	void setDamage(int damage);
 
-	void fireBallBulletCollision(std::vector<Enemy>& enemies);
-	void bulletWallCollision(std::vector<Wall>& walls);
-	bool fireBallCollision(Enemy& enemy);
-	bool collisionBulletWall(Wall& wall);
-	void wallCollision(std::vector<Wall>& walls, sf::Vector2f previousPos);
-	void bulletOrcCollision(std::vector<Enemy>& orcs);
-
-
-	void losingHp(std::vector<Enemy>& enemy);
-
 	bool mSpawnerStatus;
 	int mCurrentExperience;
 	int mExperienceNeeded;
+	int idPlayer;
 
 private:
 	//Vecteurs qui permettent de construire le tire du joueur
 	sf::Vector2f mPlayerCenter;
 	sf::Vector2f mMouseWorldPosition;
 	sf::Vector2i mMousePixelPosition;
-	sf::Vector2f aimDirection;
-	sf::Vector2f aimDirectionNormalized;
+	sf::Vector2f mAimDirection;
+	sf::Vector2f mAimDirectionNormalized;
 
-
-	Projectile bullet;
-	std::vector<Projectile> bullets;
+	Projectile mBullet;
+	std::vector<Projectile> mBullets;
 
 	// Horloge
-	sf::Clock bulletClock;
+	sf::Clock mBulletClock;
 	sf::Clock invulnerableClock;
 	sf::Clock clock; 
 	float mTimeAccumulator;
@@ -72,6 +73,5 @@ private:
 
 	//Stats
 	bool invulnerable;
-	
 };
 

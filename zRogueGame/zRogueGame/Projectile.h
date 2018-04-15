@@ -17,7 +17,5 @@ private:
 	float radius;
 	sf::Vector2f Velocity;
 	float mSpeed; //bullet speed
-
-	int attackDamage = 10;
 };
 

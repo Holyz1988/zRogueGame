@@ -9,7 +9,7 @@ mSpawnerStatus(false)
 {
 	this->level = 1;
 	this->mCurrentExperience = 0;
-	this->mExperienceNeeded = this->level * 200;
+	this->mExperienceNeeded = level * 200;
 	this->currency = 0;
 	this->maxHP = 100;
 	this->attackDamage = 100;
@@ -26,7 +26,7 @@ mSpawnerStatus(false)
 //Met à jour le sprite et le rectangle du joueur
 void Player::update(float dt, std::vector<Wall>& walls)
 {
-	cout << mCurrentExperience << endl;
+	//cout << "Level : " << level << " | currentXP : " << mCurrentExperience << " | XP Needed : " << mExperienceNeeded << endl;
 	sf::Vector2f previousPos(rect.getPosition());
 
 	//Permet de mettre la bonne frame toute les 0.175 secondes
@@ -65,8 +65,9 @@ void Player::update(float dt, std::vector<Wall>& walls)
 
 	//Arrête le joueur quand il croise un mur
 	wallCollision(walls, previousPos);
-
 	sprite.setPosition(rect.getPosition());
+
+	levelUp();
 }
 
 //Test si il y a une collision entre un ennemi et le joueur
@@ -84,7 +85,7 @@ bool Player::fireBallCollision(Enemy& enemy)
 //Test si il y a une collision entre un mur et les projectiles
 bool Player::collisionBulletWall(Wall& wall)
 {
-	if (bullet.rect.getGlobalBounds().intersects(wall.rect.getGlobalBounds()))
+	if (mBullet.rect.getGlobalBounds().intersects(wall.rect.getGlobalBounds()))
 		return true;
 	else
 		return false;
@@ -93,7 +94,7 @@ bool Player::collisionBulletWall(Wall& wall)
 //Collision entre tous les murs de l'arène est le joueur
 void Player::wallCollision(std::vector<Wall>& walls, sf::Vector2f previousPos)
 {
-	for (int i = 0; i < walls.size(); i++)
+	for (unsigned int i = 0; i < walls.size(); i++)
 	{
 		if (walls[i].rect.getGlobalBounds().intersects(this->rect.getGlobalBounds()))
 		{
@@ -104,13 +105,13 @@ void Player::wallCollision(std::vector<Wall>& walls, sf::Vector2f previousPos)
 
 void Player::bulletOrcCollision(std::vector<Enemy>& orcs)
 {
-	for (size_t i = 0; i < bullets.size(); i++)
+	for (size_t i = 0; i < mBullets.size(); i++)
 	{
 		for (size_t j = 0; j < orcs.size(); j++)
 		{
-			if (orcs[j].rect.getGlobalBounds().intersects(bullets[i].circle.getGlobalBounds()))
+			if (orcs[j].rect.getGlobalBounds().intersects(mBullets[i].circle.getGlobalBounds()))
 			{
-				//L'orc touché perds des hp
+				//L'orc touché perds des pv
 				orcs[j].currentHp -= attackDamage;
 
 				if (orcs[j].currentHp <= 0)
@@ -121,7 +122,7 @@ void Player::bulletOrcCollision(std::vector<Enemy>& orcs)
 					orcs.erase(orcs.begin() + j);
 				}
 
-				bullets.erase(bullets.begin() + i);
+				mBullets.erase(mBullets.begin() + i);
 				break;
 			}
 		}
@@ -131,14 +132,14 @@ void Player::bulletOrcCollision(std::vector<Enemy>& orcs)
 //Collision projectile joueur et projectile dragon
 void Player::fireBallBulletCollision(std::vector<Enemy>& enemies)
 {
-	for (size_t i = 0; i < bullets.size(); i++)
+	for (size_t i = 0; i < mBullets.size(); i++)
 	{
 		for (size_t j = 0; j < enemies.size(); j++)
 		{
-			if (enemies[j].rect.getGlobalBounds().intersects(bullets[i].circle.getGlobalBounds()))
+			if (enemies[j].rect.getGlobalBounds().intersects(mBullets[i].circle.getGlobalBounds()))
 			{
 				enemies.erase(enemies.begin() + j);
-				bullets.erase(bullets.begin() + i);
+				mBullets.erase(mBullets.begin() + i);
 				break;
 			}
 		}
@@ -171,29 +172,42 @@ void Player::losingHp(std::vector<Enemy>& enemy)
 	}
 }
 
+void Player::levelUp()
+{
+	if (mCurrentExperience >= mExperienceNeeded)
+	{
+		level++;
+		mCurrentExperience = mCurrentExperience - mExperienceNeeded;
+	}
+}
+
+bool Player::isDead()
+{
+	return (currentHp <= 0);
+}
+
 //Lorsque l'on clique gauche sur la souris, on charge les projectiles dans un vecteur
 //et on les détruit s'ils sortent de la fenêtre.
 void Player::fireBullets(sf::RenderWindow& window, std::vector<Wall> walls)
 {
-	mTimeAccumulator += bulletClock.restart().asSeconds(); // Accumule temps
+	mTimeAccumulator += mBulletClock.restart().asSeconds(); // Accumule temps
 														  //On charge et on tire
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && mTimeAccumulator > mBulletDelay)
 	{
-		bullet.circle.setPosition(mPlayerCenter);
-		bullet.setVelocity(aimDirectionNormalized * bullet.getSpeed());
-		bullets.push_back(bullet);
+		mBullet.circle.setPosition(mPlayerCenter);
+		mBullet.setVelocity(mAimDirectionNormalized * mBullet.getSpeed());
+		mBullets.push_back(mBullet);
 		mTimeAccumulator = 0; // On remet à 0 le chrono.
 	}
-
 	bulletWallCollision(walls);
 }
 
 //On déssine les projectiles joueur à l'écran
 void Player::drawBullets(sf::RenderWindow & window)
 {
-	for (size_t i = 0; i < bullets.size(); i++)
+	for (size_t i = 0; i < mBullets.size(); i++)
 	{
-		window.draw(bullets[i].circle);
+		window.draw(mBullets[i].circle);
 	}
 }
 
@@ -203,8 +217,8 @@ void Player::updateVectors(sf::RenderWindow& window)
 	mPlayerCenter = sf::Vector2f(rect.getPosition().x + rect.getSize().x / 2.f, rect.getPosition().y + rect.getSize().y / 2.f);
 	mMousePixelPosition = sf::Mouse::getPosition(window);
 	mMouseWorldPosition = window.mapPixelToCoords(mMousePixelPosition);
-	aimDirection = mMouseWorldPosition - mPlayerCenter;
-	aimDirectionNormalized = aimDirection / (sqrt(pow(aimDirection.x, 2) + pow(aimDirection.y, 2)));
+	mAimDirection = mMouseWorldPosition - mPlayerCenter;
+	mAimDirectionNormalized = mAimDirection / (sqrt(pow(mAimDirection.x, 2) + pow(mAimDirection.y, 2)));
 }
 
 
@@ -212,14 +226,14 @@ void Player::updateVectors(sf::RenderWindow& window)
 //Collision mur et tir du joueur
 void Player::bulletWallCollision(std::vector<Wall>& walls)
 {
-	for (size_t i = 0; i < bullets.size(); i++)
+	for (size_t i = 0; i < mBullets.size(); i++)
 	{
-		bullets[i].circle.move(bullets[i].getVelocity());
+		mBullets[i].circle.move(mBullets[i].getVelocity());
 		for (size_t j = 0; j < walls.size(); j++)
 		{
-			if (walls[j].rect.getGlobalBounds().intersects(bullets[i].circle.getGlobalBounds()))
+			if (walls[j].rect.getGlobalBounds().intersects(mBullets[i].circle.getGlobalBounds()))
 			{
-				bullets.erase(bullets.begin() + i);
+				mBullets.erase(mBullets.begin() + i);
 				break;
 			}
 		}
@@ -265,7 +279,7 @@ int Player::getCurrentHP()
 
 std::vector<Projectile> Player::getBullets()
 {
-	return this->bullets;
+	return this->mBullets;
 }
 
 bool Player::getSpawnerStatus()

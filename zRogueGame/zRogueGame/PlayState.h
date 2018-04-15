@@ -5,20 +5,24 @@
 #include "Player.h"
 #include "Enemy.h"
 #include "Wall.h"
+#include "Database.h"
 
 class PlayState : public State
 {
 public:
 	PlayState(GameDataRef data);
+	~PlayState();
 	void init();
 
 	void handleInput();
 	void update(float dt);
 	void draw(float dt);
+	Database* db;
 
 private:
 	void pauseGame();
 	void centerCamera();
+
 
 	//void updateVectors();
 	//void fireBullets();
@@ -55,5 +59,7 @@ private:
 
 	//Zone de spawn
 	Wall mSpawnTile;
+
+	
 };
 

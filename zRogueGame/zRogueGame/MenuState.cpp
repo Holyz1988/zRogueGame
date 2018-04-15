@@ -1,6 +1,7 @@
 #include "MenuState.h"
 #include "PlayState.h"
 #include "OptionState.h"
+#include "NewGameState.h"
 #include <iostream>
 
 MenuState::MenuState(GameDataRef data) : _data(data)
@@ -39,11 +40,13 @@ void MenuState::init()
 	mButtons.push_back(text);
 	mButtons.push_back(text);
 	mButtons.push_back(text);
+	mButtons.push_back(text);
 
 	//On donne un texte à chaque boutton
-	mButtons[0].setString("Play game");
-	mButtons[1].setString("Options");
-	mButtons[2].setString("Quit");
+	mButtons[0].setString("Nouvelle partie");
+	mButtons[1].setString("Charger une partie");
+	mButtons[2].setString("Options");
+	mButtons[3].setString("Quitter");
 
 	//On place les bouttons
 	for (unsigned int i = 0; i < mButtons.size(); i++)
@@ -87,9 +90,13 @@ void MenuState::handleInput()
 				}
 				else if (isTextClicked(mButtons[1]))
 				{
-					loadOptions();
+					loadSaves();
 				}
 				else if (isTextClicked(mButtons[2]))
+				{
+					loadOptions();
+				}
+				else if (isTextClicked(mButtons[3]))
 				{
 					this->_data->window.close();
 				}
@@ -123,6 +130,11 @@ void MenuState::loadGame()
 void MenuState::loadOptions()
 {
 	this->_data->machine.addState(StateRef(new OptionState(this->_data)), false);
+}
+
+void MenuState::loadSaves()
+{
+	this->_data->machine.addState(StateRef(new NewGameState(this->_data)), false);
 }
 
 bool MenuState::isTextClicked(sf::Text& text)

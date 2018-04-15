@@ -31,10 +31,7 @@ public:
 	void setVelocity(sf::Vector2f velocity);
 	sf::Vector2f getVelocity();
 
-	int getDamage();
-
-
-	
+	int getDamage();	
 	int experienceGiven;
 
 private:

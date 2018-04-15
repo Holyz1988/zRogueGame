@@ -79,7 +79,7 @@
       <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>C:\Users\adai11\Desktop\Libs\SFML-2.4.2\lib;C:\Libs\SFML-2.4.2\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\adai11\Desktop\Libs\SFML-2.4.2\lib;C:\Libs\SFML-2.4.2\lib;C:\Users\Amine\Desktop\PROJET\zRogueGame\zRogueGame\zRogueGame</AdditionalLibraryDirectories>
       <AdditionalDependencies>sfml-graphics-s-d.lib;freetype.lib;jpeg.lib;sfml-window-s-d.lib;opengl32.lib;gdi32.lib;sfml-audio-s-d.lib;openal32.lib;flac.lib;vorbisenc.lib;vorbisfile.lib;vorbis.lib;ogg.lib;sfml-network-s-d.lib;ws2_32.lib;sfml-system-s-d.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Bscmake>
@@ -133,25 +133,32 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Character.cpp" />
+    <ClCompile Include="Database.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameOverState.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MenuState.cpp" />
+    <ClCompile Include="NewGameState.cpp" />
     <ClCompile Include="OptionState.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayState.cpp" />
     <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="RessourceHolder.cpp" />
+    <ClCompile Include="sqlite3.c" />
     <ClCompile Include="StateMachine.cpp" />
     <ClCompile Include="Wall.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Character.h" />
+    <ClInclude Include="Database.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GameOverState.h" />
     <ClInclude Include="MenuState.h" />
+    <ClInclude Include="NewGameState.h" />
     <ClInclude Include="OptionState.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayState.h" />
