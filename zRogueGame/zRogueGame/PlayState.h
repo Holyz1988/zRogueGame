@@ -10,6 +10,7 @@
 class PlayState : public State
 {
 public:
+	PlayState(GameDataRef data, Player& player);
 	PlayState(GameDataRef data);
 	~PlayState();
 	void init();
@@ -30,6 +31,7 @@ private:
 
 private:
 	GameDataRef _data;
+
 
 	sf::View mCamera;
 

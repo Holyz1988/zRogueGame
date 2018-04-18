@@ -6,10 +6,16 @@
 
 using namespace std;
 
+PlayState::PlayState(GameDataRef data, Player& player) : _data(data),
+mPlayer(player)
+{
+	mPlayer.idPlayer = player.idPlayer;
+}
+
 PlayState::PlayState(GameDataRef data) : _data(data)
 {
-	mOrc.level = mPlayer.level;
 }
+
 
 PlayState::~PlayState()
 {
@@ -69,16 +75,11 @@ void PlayState::handleInput()
 		{
 			/* Ferme la fenêtre */
 		case sf::Event::Closed:
+			db->updatePlayer(mPlayer);
+			db->closeDatabase();
 			this->_data->window.close();
 			break;
 
-			//pause game
-		case sf::Event::KeyReleased:
-			if (event.key.code == sf::Keyboard::Escape)
-			{
-				db->insertPlayer(mPlayer);
-			}
-			break;
 		case sf::Event::KeyPressed:
 		//Spawns orcs
 			if (event.key.code == sf::Keyboard::E)
@@ -95,11 +96,13 @@ void PlayState::handleInput()
 }
 
 void PlayState::update(float dt)
-{
-	cout << mPlayer.currentHp << endl;
+
+{	
 	//Ecran fin de partie si le joueur meurt
 	if (mPlayer.isDead())
 	{
+		db->updatePlayer(mPlayer);
+		db->closeDatabase();
 		this->_data->machine.addState(StateRef(new GameOverState(this->_data)), true);
 	}
 

@@ -18,10 +18,12 @@ public:
 	bool insertPlayer(Player& player);
 	//On revoir un pointeur sur un vecteur de produit
 	std::vector<Player> getAllPlayer();
-	/*
-	bool updatePlayer(Player* player);
-	bool deletePlayer(int id);
-	*/
+	Player getPlayer(int id);
+	int getPlayerNumber();
+	
+	bool updatePlayer(Player& player);
+	bool resetPlayer(int id);
+	
 	
 
 private:

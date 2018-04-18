@@ -2,7 +2,10 @@
 #include "PlayState.h"
 #include "OptionState.h"
 #include "NewGameState.h"
+#include "NewPlayerState.h"
 #include <iostream>
+
+#define MAX_SAVE_NUMBER 2
 
 MenuState::MenuState(GameDataRef data) : _data(data)
 {
@@ -56,6 +59,16 @@ void MenuState::init()
 							  titleRect.top + titleRect.height / 2.0f);
 		mButtons[i].setPosition(sf::Vector2f(this->_data->window.getSize().x / 2.0f, 300.f + (i * 65.f)));
 	}
+
+	//On prépare nos trois sauvegardes
+	db = new Database();
+	db->openDatabase();
+	int count = db->getPlayerNumber();
+	while (count < MAX_SAVE_NUMBER)
+	{
+		count = db->getPlayerNumber();
+		db->insertPlayer(player);
+	}
 }
 
 
@@ -86,7 +99,7 @@ void MenuState::handleInput()
 			{
 				if (isTextClicked(mButtons[0]))
 				{
-					loadGame();
+					loadPlayers();
 				}
 				else if (isTextClicked(mButtons[1]))
 				{
@@ -101,6 +114,7 @@ void MenuState::handleInput()
 					this->_data->window.close();
 				}
 			}
+			break;
 		}
 	}
 }
@@ -135,6 +149,11 @@ void MenuState::loadOptions()
 void MenuState::loadSaves()
 {
 	this->_data->machine.addState(StateRef(new NewGameState(this->_data)), false);
+}
+
+void MenuState::loadPlayers()
+{
+	this->_data->machine.addState(StateRef(new NewPlayerState(this->_data)), false);
 }
 
 bool MenuState::isTextClicked(sf::Text& text)

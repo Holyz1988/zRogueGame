@@ -55,10 +55,18 @@ bool Database::insertPlayer(Player& player)
 	char bAttackDamage[1000];
 	char bLevel[100];
 	char bCurrency[100];
+	char bCurrentXP[100];
+	char bExpNeeded[100];
+	char bBulletRadius[100];
+	char bBulletDelay[100];
 	sprintf_s(bMaxHP, "%d", player.maxHP);
 	sprintf_s(bAttackDamage, "%d", player.attackDamage);
 	sprintf_s(bLevel, "%d", player.level);
 	sprintf_s(bCurrency, "%d", player.currency);
+	sprintf_s(bCurrentXP, "%d", player.mCurrentExperience);
+	sprintf_s(bExpNeeded, "%d", player.mExperienceNeeded);
+	sprintf_s(bBulletRadius, "%f", player.getBullet().circle.getRadius());
+	sprintf_s(bBulletDelay, "%f", player.getBulletDelay());
 
 	std::string query = "INSERT INTO Player VALUES (";
 
@@ -71,12 +79,53 @@ bool Database::insertPlayer(Player& player)
 	query += bLevel;
 	query += ",";
 	query += bCurrency;
+	query += ",";
+	query += bCurrentXP;
+	query += ",";
+	query += bExpNeeded;
+	query += ",";
+	query += bBulletRadius;
+	query += ",";
+	query += bBulletDelay;
 	query += ")";
 
 	std::cout << query << std::endl;
 
 	return executeQuery(query);
 }
+
+
+int Database::getPlayerNumber()
+{
+	//Attention, bien regarde le rowid
+	std::string query = "SELECT count(*) FROM Player";
+	int i;
+	int count;
+
+	sqlite3_stmt * stmt;
+	//strlen longueur de la taille du tableau
+	//Tail on s'en fiche, on le met a null
+	sqlite3_prepare_v2(db, query.c_str(), strlen(query.c_str()) + 1, &stmt, NULL);
+
+	//Tant qu'il y a des données, on les récupères
+	do {
+		//Fonction step qui renvoi le signal "je suis ou pas dans une ligne"
+		i = sqlite3_step(stmt);
+		if (i == SQLITE_ROW)
+		{
+			//params, stmt et l'id de la 1ère colonne
+			//Récupère l'id
+			count = sqlite3_column_int(stmt, 0);
+		}
+		else
+		{
+			std::cout << "no rows" << std::endl;
+		}
+	} while (i == SQLITE_ROW); //Tant qu'il y a des données, on itère !
+
+	return count;
+}
+
 
 
 std::vector<Player> Database::getAllPlayer()
@@ -98,15 +147,20 @@ std::vector<Player> Database::getAllPlayer()
 		if (i == SQLITE_ROW)
 		{
 			Player player;
-			players.push_back(player);
 
 			//params, stmt et l'id de la 1ère colonne
 			//Récupère l'id
 			player.idPlayer = sqlite3_column_int(stmt, 0);
 			player.maxHP = sqlite3_column_int(stmt, 1);
-			player.attackDamage = sqlite3_column_double(stmt, 2);
+			player.attackDamage = sqlite3_column_int(stmt, 2);
 			player.level = sqlite3_column_int(stmt, 3);
 			player.currency = sqlite3_column_int(stmt, 4);
+			player.mCurrentExperience = sqlite3_column_int(stmt, 5);
+			player.mExperienceNeeded = sqlite3_column_int(stmt, 6);
+			player.setBulletRadius(sqlite3_column_double(stmt, 7));
+			player.setBulletDelay(sqlite3_column_double(stmt, 8));
+
+			players.push_back(player);
 		}
 		else
 		{
@@ -116,38 +170,82 @@ std::vector<Player> Database::getAllPlayer()
 
 	return players;
 }
-/*
-bool Database::updatePlayer(Player* player)
+
+bool Database::updatePlayer(Player& player)
 {
-	std::string query = "UPDATE produits SET nom=?, prix=?, qtevendue=? WHERE rowid=?";
+	std::string query = "UPDATE Player SET maxHP=?, attackDamage=?, level=?, currency=?, currentXP=?, expNeeded=?, bulletRadius=?, bulletDelay=? WHERE idPlayer=?";
 	sqlite3_stmt * stmt;
 	sqlite3_prepare_v2(db, query.c_str(), strlen(query.c_str()) + 1, &stmt, NULL);
 
 	//Création des bind, comme en csharp, on remplace les ? par les valeurs
-	sqlite3_bind_text(stmt, 1, player->nom.c_str(), strlen(produit->nom.c_str()), 0);
-	sqlite3_bind_double(stmt, 2, player->prix);
-	sqlite3_bind_int(stmt, 3, player->qteVendue);
-	sqlite3_bind_int(stmt, 4, player->id);
+	//sqlite3_bind_text(stmt, 1, player.maxHP.c_str(), strlen(produit->nom.c_str()), 0);
+	sqlite3_bind_int(stmt, 1, player.maxHP);
+	sqlite3_bind_int(stmt, 2, player.attackDamage);
+	sqlite3_bind_int(stmt, 3, player.level);
+	sqlite3_bind_int(stmt, 4, player.currency);
+	sqlite3_bind_int(stmt, 5, player.mCurrentExperience);
+	sqlite3_bind_int(stmt, 6, player.mExperienceNeeded);
+	sqlite3_bind_double(stmt, 7, player.getBullet().circle.getRadius());
+	sqlite3_bind_double(stmt, 8, player.getBulletDelay());
+	sqlite3_bind_int(stmt, 9, player.idPlayer);
 	sqlite3_step(stmt);
 	sqlite3_finalize(stmt);
 
 	return true;
 }
 
-bool Database::deletePlayer(int id)
+Player Database::getPlayer(int id)
 {
-	std::string query = "DELETE FROM produits WHERE rowid=?";
+	std::string query = "SELECT * FROM Player WHERE idPlayer=?";
+	int i;
+	Player player;
+
+	sqlite3_stmt * stmt;
+	//strlen longueur de la taille du tableau
+	//Tail on s'en fiche, on le met a null
+	sqlite3_prepare_v2(db, query.c_str(), strlen(query.c_str()) + 1, &stmt, NULL);
+	sqlite3_bind_int(stmt, 0, id);
+	sqlite3_step(stmt);
+
+	//Tant qu'il y a des données, on les récupères
+		//Fonction step qui renvoi le signal "je suis ou pas dans une ligne"
+			//params, stmt et l'id de la 1ère colonne
+			//Récupère l'id
+	player.idPlayer = sqlite3_column_int(stmt, 0);
+	player.maxHP = sqlite3_column_int(stmt, 1);
+	player.attackDamage = sqlite3_column_int(stmt, 2);
+	player.level = sqlite3_column_int(stmt, 3);
+	player.currency = sqlite3_column_int(stmt, 4);
+	player.mCurrentExperience = sqlite3_column_int(stmt, 5);
+	player.mExperienceNeeded = sqlite3_column_int(stmt, 6);
+	player.setBulletRadius(sqlite3_column_double(stmt, 7));
+	player.setBulletDelay(sqlite3_column_double(stmt, 8));
+	
+	sqlite3_finalize(stmt);
+
+	return player;
+}
+
+bool Database::resetPlayer(int id)
+{
+	std::string query = "UPDATE Player SET maxHP=?, attackDamage=?, level=?, currency=?, currentXP=?, expNeeded=?, bulletRadius=?, bulletDelay=? WHERE idPlayer=?";
 	sqlite3_stmt * stmt;
 	sqlite3_prepare_v2(db, query.c_str(), strlen(query.c_str()) + 1, &stmt, NULL);
 
-	//Bind
-	sqlite3_bind_int(stmt, 1, id);
-
-	//Execute
+	//Création des bind, comme en csharp, on remplace les ? par les valeurs
+	//sqlite3_bind_text(stmt, 1, player.maxHP.c_str(), strlen(produit->nom.c_str()), 0);
+	sqlite3_bind_int(stmt, 1, 100);
+	sqlite3_bind_int(stmt, 2, 100);
+	sqlite3_bind_int(stmt, 3, 1);
+	sqlite3_bind_int(stmt, 4, 0);
+	sqlite3_bind_int(stmt, 5, 0);
+	sqlite3_bind_int(stmt, 6, 200);
+	sqlite3_bind_double(stmt, 7, 4.0);
+	sqlite3_bind_double(stmt, 8, 1.0);
+	sqlite3_bind_int(stmt, 9, id);
 	sqlite3_step(stmt);
 	sqlite3_finalize(stmt);
 
 	return true;
-
 }
-*/
+

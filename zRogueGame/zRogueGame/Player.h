@@ -21,6 +21,7 @@ public:
 
 	//actionne le spawn des mobs
 	void spawnOrcs(Wall& spawnTile);
+
 	void fireBallBulletCollision(std::vector<Enemy>& enemies);
 	void bulletWallCollision(std::vector<Wall>& walls);
 	bool fireBallCollision(Enemy& enemy);
@@ -38,9 +39,13 @@ public:
 	int getCurrentHP();
 	std::vector<Projectile> getBullets();
 	bool getSpawnerStatus();
+	float getBulletDelay();
+	Projectile getBullet();
 
 	//Setters
 	void setDamage(int damage);
+	void setBulletDelay(float bulletDelaly);
+	void setBulletRadius(float bulletRadius);
 
 	bool mSpawnerStatus;
 	int mCurrentExperience;
@@ -63,7 +68,7 @@ private:
 	sf::Clock invulnerableClock;
 	sf::Clock clock; 
 	float mTimeAccumulator;
-	const float mBulletDelay = 0.1f;
+	float mBulletDelay;
 
 	float timePassed; // Temps écouler
 	float switchTime = 0.3f; // Temps que prend une frame d'animation

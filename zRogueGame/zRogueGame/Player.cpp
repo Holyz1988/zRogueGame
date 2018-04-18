@@ -7,9 +7,10 @@ using namespace std;
 Player::Player() : invulnerable(false),
 mSpawnerStatus(false)
 {
+	this->mBulletDelay = 1.f;
 	this->level = 1;
 	this->mCurrentExperience = 0;
-	this->mExperienceNeeded = level * 200;
+	this->mExperienceNeeded = 200;
 	this->currency = 0;
 	this->maxHP = 100;
 	this->attackDamage = 100;
@@ -26,7 +27,7 @@ mSpawnerStatus(false)
 //Met à jour le sprite et le rectangle du joueur
 void Player::update(float dt, std::vector<Wall>& walls)
 {
-	//cout << "Level : " << level << " | currentXP : " << mCurrentExperience << " | XP Needed : " << mExperienceNeeded << endl;
+	//cout << "Level : " << level << " | currentXP : " << mCurrentExperience << " | XP Needed : " << mExperienceNeeded << " ID : " << idPlayer << endl;
 	sf::Vector2f previousPos(rect.getPosition());
 
 	//Permet de mettre la bonne frame toute les 0.175 secondes
@@ -73,7 +74,6 @@ void Player::update(float dt, std::vector<Wall>& walls)
 //Test si il y a une collision entre un ennemi et le joueur
 bool Player::fireBallCollision(Enemy& enemy)
 {
-
 	if (this->rect.getGlobalBounds().intersects(enemy.rect.getGlobalBounds()))
 	{
 		return true;
@@ -91,7 +91,7 @@ bool Player::collisionBulletWall(Wall& wall)
 		return false;
 }
 
-//Collision entre tous les murs de l'arène est le joueur
+//Collision entre tous les murs de l'arène et le joueur
 void Player::wallCollision(std::vector<Wall>& walls, sf::Vector2f previousPos)
 {
 	for (unsigned int i = 0; i < walls.size(); i++)
@@ -117,7 +117,7 @@ void Player::bulletOrcCollision(std::vector<Enemy>& orcs)
 				if (orcs[j].currentHp <= 0)
 				{
 					orcs[j].currentHp = 0;
-					mCurrentExperience += orcs[j].experienceGiven;
+					mCurrentExperience += orcs[j].experienceGiven * orcs[j].level;
 					currency += orcs[j].currency;
 					orcs.erase(orcs.begin() + j);
 				}
@@ -178,6 +178,9 @@ void Player::levelUp()
 	{
 		level++;
 		mCurrentExperience = mCurrentExperience - mExperienceNeeded;
+		mExperienceNeeded *= 1.25;
+		mBullet.circle.setRadius(mBullet.circle.getRadius() + 1);
+		mBulletDelay -= 0.1;
 	}
 }
 
@@ -187,7 +190,6 @@ bool Player::isDead()
 }
 
 //Lorsque l'on clique gauche sur la souris, on charge les projectiles dans un vecteur
-//et on les détruit s'ils sortent de la fenêtre.
 void Player::fireBullets(sf::RenderWindow& window, std::vector<Wall> walls)
 {
 	mTimeAccumulator += mBulletClock.restart().asSeconds(); // Accumule temps
@@ -242,7 +244,7 @@ void Player::bulletWallCollision(std::vector<Wall>& walls)
 
 
 
-//Permet de retirer la vulnérabilité
+//Permet de retirer l'invulnérabilité
 void Player::resetInvulnerableTimer()
 {
 	invulnerableTimer += invulnerableClock.restart().asSeconds();
@@ -272,6 +274,16 @@ void Player::setDamage(int damage)
 	this->attackDamage = damage;
 }
 
+void Player::setBulletDelay(float bulletDelaly)
+{
+	this->mBulletDelay = bulletDelaly;
+}
+
+void Player::setBulletRadius(float bulletRadius)
+{
+	this->mBullet.circle.setRadius(bulletRadius);
+}
+
 int Player::getCurrentHP()
 {
 	return this->currentHp;
@@ -285,4 +297,14 @@ std::vector<Projectile> Player::getBullets()
 bool Player::getSpawnerStatus()
 {
 	return this->mSpawnerStatus;
+}
+
+float Player::getBulletDelay()
+{
+	return this->mBulletDelay;
+}
+
+Projectile Player::getBullet()
+{
+	return this->mBullet;
 }

@@ -2,6 +2,8 @@
 #include "State.hpp"
 #include "Game.h"
 #include "RessourceHolder.h"
+#include "Database.h"
+#include "Player.h"
 #include <vector>
 
 class MenuState : public State
@@ -20,11 +22,14 @@ private:
 	void loadGame();
 	void loadOptions();
 	void loadSaves();
+	void loadPlayers();
 	bool isTextClicked(sf::Text& text);
 	void changeTextDesign(std::vector<sf::Text>& buttons);
 
 private:
 	GameDataRef _data;
+	Database* db;
+	Player player;
 
 	RessourceHolder ressources;
 	sf::Sprite menuSprite;

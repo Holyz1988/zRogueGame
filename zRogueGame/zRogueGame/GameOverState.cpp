@@ -10,8 +10,30 @@ GameOverState::GameOverState(GameDataRef data) : _data(data)
 
 void GameOverState::init()
 {
-	optionScreen.loadTexture("gameOverBackground", "ressources/game_over_screen.png");
-	optionBackground.setTexture(optionScreen.getTexture("gameOverBackground"));
+	ressources.loadTexture("gameOverBackground", "ressources/game_over_screen.png");
+	gameOverBackground.setTexture(ressources.getTexture("gameOverBackground"));
+
+	sf::Text text;
+	ressources.loadFont("menuFont", "ressources/gomarice_game_continue_02.ttf");
+	text.setFont(ressources.getFont("menuFont"));
+	text.setCharacterSize(40);
+	text.setStyle(sf::Text::Bold);
+
+	mButtons.push_back(text);
+	mButtons.push_back(text);
+	mButtons.push_back(text);
+
+	mButtons[0].setString("Continuer");
+	mButtons[1].setString("Retourner au menu");
+	mButtons[2].setString("Quitter");
+
+	for (unsigned int i = 0; i < mButtons.size(); i++)
+	{
+		sf::FloatRect buttonRect = mButtons[i].getLocalBounds();
+		mButtons[i].setOrigin(buttonRect.left + buttonRect.width / 2.0f,
+			buttonRect.top + buttonRect.height / 2.0f);
+		mButtons[i].setPosition(sf::Vector2f(this->_data->window.getSize().x / 2.0f, 400 + (i * 65.f)));
+	}
 
 	mCamera.reset(sf::FloatRect(0,0,800, 600));
 	this->_data->window.setView(mCamera);
@@ -27,10 +49,30 @@ void GameOverState::handleInput()
 		case sf::Event::Closed:
 			this->_data->window.close();
 			break;
-		case sf::Event::KeyReleased:
+		case sf::Event::KeyPressed:
 			if (event.key.code == sf::Keyboard::Escape)
+				this->_data->window.close();
+			break;
+			//Si on passe la souris sur l'un des textes du menu, changement de style.
+		case sf::Event::MouseMoved:
+			changeTextDesign(mButtons);
+			break;
+			//Gestion de la navigation du menu
+		case sf::Event::MouseButtonPressed:
+			if (event.mouseButton.button == sf::Mouse::Left)
 			{
-				this->_data->machine.addState(StateRef(new PlayState(this->_data)), true);
+				if (isTextClicked(mButtons[0]))
+				{
+					//Loadplayer
+				}
+				else if (isTextClicked(mButtons[1]))
+				{
+					loadMenu();
+				}
+				else if (isTextClicked(mButtons[2]))
+				{
+					this->_data->window.close();
+				}
 			}
 			break;
 		}
@@ -43,20 +85,42 @@ void GameOverState::update(float dt)
 
 void GameOverState::draw(float dt)
 {
-	this->_data->window.draw(optionBackground);
+	this->_data->window.draw(gameOverBackground);
+	for (unsigned int i = 0; i < mButtons.size(); i++)
+	{
+		this->_data->window.draw(mButtons[i]);
+	}
 }
 
 void GameOverState::loadMenu()
 {
-	//TODO : Arrache la mémoire, trouver une meilleur solution
-	//this->_data->previousState();
+	this->_data->machine.addState(StateRef(new MenuState(this->_data)), true);
 }
 
 bool GameOverState::isTextClicked(sf::Text text)
 {
-	return false;
+	sf::FloatRect rect = text.getGlobalBounds();
+
+	//Si la souris se trouve sur le rectangle
+	if (rect.contains((float)sf::Mouse::getPosition(this->_data->window).x, (float)sf::Mouse::getPosition(this->_data->window).y))
+		return true;
+	else
+		return false;
 }
 
 void GameOverState::changeTextDesign(std::vector<sf::Text>& buttons)
 {
+	for (unsigned int i = 0; i < buttons.size(); i++)
+	{
+		if (isTextClicked(buttons[i]))
+		{
+			buttons[i].setFillColor(sf::Color::Red);
+			buttons[i].setOutlineThickness(6.f);
+		}
+		else
+		{
+			buttons[i].setFillColor(sf::Color::White);
+			buttons[i].setOutlineThickness(0.f);
+		}
+	}
 }

@@ -23,10 +23,13 @@ private:
 
 private:
 	GameDataRef _data;
+	std::vector<Player> players;
+	Database* db;
 
-	RessourceHolder optionScreen;
-	sf::Sprite optionBackground;
+	RessourceHolder ressources;
+	sf::Sprite newGameBackground;
 
-	std::vector<sf::Text> buttons;
+	sf::Text mTitle;
+	std::vector<sf::Text> mButtons;
 };
 

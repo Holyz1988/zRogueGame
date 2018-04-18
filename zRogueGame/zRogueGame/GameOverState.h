@@ -9,7 +9,6 @@ class GameOverState : public State
 public:
 	GameOverState(GameDataRef data);
 	void init();
-
 	void handleInput();
 	void update(float dt);
 	void draw(float dt);
@@ -23,9 +22,10 @@ private:
 
 private:
 	GameDataRef _data;
+	Database* db;
+	Player player;
 
-	RessourceHolder optionScreen;
-	sf::Sprite optionBackground;
-
-	std::vector<sf::Text> buttons;
+	RessourceHolder ressources;
+	sf::Sprite gameOverBackground;
+	std::vector<sf::Text> mButtons;
 };

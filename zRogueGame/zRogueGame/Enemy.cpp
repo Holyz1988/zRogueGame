@@ -19,12 +19,12 @@ timePassed(0),
 currentFrame(0)
 {
 	this->level = 1;
-	this->experienceGiven = this->level * 8;
+	this->experienceGiven = 50;
 	this->rect.setSize(sf::Vector2f(32.f, 50.f));
 	this->rect.setFillColor(sf::Color::White);
 	this->currency = 10;
 	this->maxHP = 100;
-	this->attackDamage = 100;
+	this->attackDamage = 20;
 	this->mSpeed = 250.f;
 	this->currentHp = maxHP;
 }
@@ -39,12 +39,12 @@ timePassed(0),
 currentFrame(0)
 {
 	this->level = player.level;
-	this->experienceGiven = level * 8;
+	this->experienceGiven = 8;
 	this->rect.setSize(sf::Vector2f(32.f, 50.f));
 	this->rect.setFillColor(sf::Color::White);
 	this->currency = 10;
 	this->maxHP = 100;
-	this->attackDamage = 5;
+	this->attackDamage = 20;
 	this->mSpeed = 250.f;
 	this->currentHp = maxHP;
 }
