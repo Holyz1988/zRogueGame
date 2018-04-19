@@ -7,15 +7,15 @@ using namespace std;
 Player::Player() : invulnerable(false),
 mSpawnerStatus(false)
 {
-	this->mBulletDelay = 1.f;
+	this->mBulletDelay = 0.2f;
 	this->level = 1;
 	this->mCurrentExperience = 0;
 	this->mExperienceNeeded = 200;
 	this->currency = 0;
-	this->maxHP = 100;
-	this->attackDamage = 100;
+	this->attackDamage = 5;
 	this->mSpeed = 350.f;
-	this->currentHp = maxHP;
+	this->currentHp = 100;
+	this->maxHP = 100;
 	rect.setSize(sf::Vector2f(32.f, 32.f));
 	rect.setPosition(sf::Vector2f(1000.f, 200.f));
 	rect.setFillColor(sf::Color::White);
@@ -32,6 +32,8 @@ void Player::update(float dt, std::vector<Wall>& walls)
 
 	//Permet de mettre la bonne frame toute les 0.175 secondes
 	timePassed += clock.restart().asSeconds();
+
+	bulletWallCollision(walls);
 
 	if (timePassed >= switchTime)
 	{
@@ -69,6 +71,7 @@ void Player::update(float dt, std::vector<Wall>& walls)
 	sprite.setPosition(rect.getPosition());
 
 	levelUp();
+	updateHP();
 }
 
 //Test si il y a une collision entre un ennemi et le joueur
@@ -130,6 +133,7 @@ void Player::bulletOrcCollision(std::vector<Enemy>& orcs)
 }
 
 //Collision projectile joueur et projectile dragon
+/*
 void Player::fireBallBulletCollision(std::vector<Enemy>& enemies)
 {
 	for (size_t i = 0; i < mBullets.size(); i++)
@@ -145,6 +149,7 @@ void Player::fireBallBulletCollision(std::vector<Enemy>& enemies)
 		}
 	}
 }
+*/
 
 void Player::losingHp(std::vector<Enemy>& enemy)
 {
@@ -172,15 +177,19 @@ void Player::losingHp(std::vector<Enemy>& enemy)
 	}
 }
 
+//MAJ des stats du joueur
 void Player::levelUp()
 {
 	if (mCurrentExperience >= mExperienceNeeded)
 	{
 		level++;
 		mCurrentExperience = mCurrentExperience - mExperienceNeeded;
-		mExperienceNeeded *= 1.25;
+		mExperienceNeeded *= 1.50;
 		mBullet.circle.setRadius(mBullet.circle.getRadius() + 1);
-		mBulletDelay -= 0.1;
+		mBulletDelay -= 0.01;
+		attackDamage += 10;
+		maxHP += 50;
+		currentHp = maxHP;
 	}
 }
 
@@ -192,8 +201,9 @@ bool Player::isDead()
 //Lorsque l'on clique gauche sur la souris, on charge les projectiles dans un vecteur
 void Player::fireBullets(sf::RenderWindow& window, std::vector<Wall> walls)
 {
-	mTimeAccumulator += mBulletClock.restart().asSeconds(); // Accumule temps
-														  //On charge et on tire
+	mTimeAccumulator += mBulletClock.restart().asSeconds();
+	// Accumule temps, on charge et on tire
+
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && mTimeAccumulator > mBulletDelay)
 	{
 		mBullet.circle.setPosition(mPlayerCenter);
@@ -201,7 +211,7 @@ void Player::fireBullets(sf::RenderWindow& window, std::vector<Wall> walls)
 		mBullets.push_back(mBullet);
 		mTimeAccumulator = 0; // On remet à 0 le chrono.
 	}
-	bulletWallCollision(walls);
+	
 }
 
 //On déssine les projectiles joueur à l'écran
@@ -209,6 +219,7 @@ void Player::drawBullets(sf::RenderWindow & window)
 {
 	for (size_t i = 0; i < mBullets.size(); i++)
 	{
+		cout << mBullets[i].getSpeed() << endl;
 		window.draw(mBullets[i].circle);
 	}
 }
@@ -223,7 +234,12 @@ void Player::updateVectors(sf::RenderWindow& window)
 	mAimDirectionNormalized = mAimDirection / (sqrt(pow(mAimDirection.x, 2) + pow(mAimDirection.y, 2)));
 }
 
-
+//Met à jour les HP joueur
+void Player::updateHP()
+{
+	text.setString(to_string(currentHp) + "/" + to_string(maxHP));
+	text.setPosition(rect.getPosition().x, rect.getPosition().y - rect.getSize().y / 2);
+}
 
 //Collision mur et tir du joueur
 void Player::bulletWallCollision(std::vector<Wall>& walls)
@@ -241,8 +257,6 @@ void Player::bulletWallCollision(std::vector<Wall>& walls)
 		}
 	}
 }
-
-
 
 //Permet de retirer l'invulnérabilité
 void Player::resetInvulnerableTimer()

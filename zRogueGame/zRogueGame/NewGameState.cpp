@@ -82,14 +82,17 @@ void NewGameState::handleInput()
 			{
 				if (isTextClicked(mButtons[0]))
 				{
+					players[0].currentHp = players[0].maxHP;
 					this->_data->machine.addState(StateRef(new PlayState(this->_data, players[0])), true);
 				}
 				else if (isTextClicked(mButtons[1]))
 				{
+					players[1].currentHp = players[1].maxHP;
 					this->_data->machine.addState(StateRef(new PlayState(this->_data, players[1])), true);
 				}
 				else if (isTextClicked(mButtons[2]))
 				{
+					players[1].currentHp = players[1].maxHP;
 					this->_data->machine.addState(StateRef(new PlayState(this->_data, players[2])), true);
 				}
 			}

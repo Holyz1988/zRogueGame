@@ -150,6 +150,7 @@
     <ClCompile Include="RessourceHolder.cpp" />
     <ClCompile Include="sqlite3.c" />
     <ClCompile Include="StateMachine.cpp" />
+    <ClCompile Include="TextDisplay.cpp" />
     <ClCompile Include="Wall.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -169,6 +170,7 @@
     <ClInclude Include="RessourceHolder.h" />
     <ClInclude Include="State.hpp" />
     <ClInclude Include="StateMachine.h" />
+    <ClInclude Include="TextDisplay.h" />
     <ClInclude Include="Wall.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

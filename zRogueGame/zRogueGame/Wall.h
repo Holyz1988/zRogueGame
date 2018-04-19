@@ -1,6 +1,24 @@
 #pragma once
 #include "Entity.h"
 
+/**
+* \file			Wall.h
+* \author		Amine ZEGHAD
+* \version		1.0
+* \date			19 april 2018
+* \brief		Classe représentant les tuiles du jeu
+*
+* \details		Classe représentant les tuiles du jeu
+*/
+
+
+/*! \class		Wall
+* \brief		Classe représentant les tuiles du jeu
+*
+* \details		Classe représentant les tuiles du jeu
+*
+*/
+
 class Wall : public Entity
 {
 public:
@@ -15,7 +33,7 @@ public:
 	void drawSpawner(Wall& tile,sf::RenderWindow& window);
 
 public:
-	sf::Texture mWallTexture;
-	bool locked;
+	sf::Texture mWallTexture;/*!< */
+	bool locked;/*!< */
 };
 

@@ -5,8 +5,27 @@
 #include "Enemy.h"
 #include "Wall.h"
 
+/**
+* \file			Player.h
+* \author		Amine ZEGHAD
+* \version		1.0
+* \date			19 april 2018
+* \brief		Classe contenant la logique et les caractéristiques du joueur
+*
+* \details		Classe contenant la logique et les caractéristiques du joueur
+*/
+
+
+
 class Enemy;
 
+
+/*! \class		Player
+* \brief		Classe contenant la logique et les caractéristiques du joueur
+*
+* \details		Classe contenant la logique et les caractéristiques du joueur
+*
+*/
 class Player : public Character	
 {
 public:
@@ -22,7 +41,7 @@ public:
 	//actionne le spawn des mobs
 	void spawnOrcs(Wall& spawnTile);
 
-	void fireBallBulletCollision(std::vector<Enemy>& enemies);
+	//void fireBallBulletCollision(std::vector<Enemy>& enemies);
 	void bulletWallCollision(std::vector<Wall>& walls);
 	bool fireBallCollision(Enemy& enemy);
 	bool collisionBulletWall(Wall& wall);
@@ -33,6 +52,7 @@ public:
 
 	void levelUp();
 	bool isDead();
+	void updateHP();
 
 	//Accesseurs
 	int getDamage();
@@ -47,36 +67,36 @@ public:
 	void setBulletDelay(float bulletDelaly);
 	void setBulletRadius(float bulletRadius);
 
-	bool mSpawnerStatus;
-	int mCurrentExperience;
-	int mExperienceNeeded;
-	int idPlayer;
+	bool mSpawnerStatus;/*!< */
+	int mCurrentExperience;/*!< */
+	int mExperienceNeeded;/*!< */
+	int idPlayer;/*!< */
 
 private:
 	//Vecteurs qui permettent de construire le tire du joueur
-	sf::Vector2f mPlayerCenter;
-	sf::Vector2f mMouseWorldPosition;
-	sf::Vector2i mMousePixelPosition;
-	sf::Vector2f mAimDirection;
-	sf::Vector2f mAimDirectionNormalized;
+	sf::Vector2f mPlayerCenter/*!< */;
+	sf::Vector2f mMouseWorldPosition;/*!< */
+	sf::Vector2i mMousePixelPosition;/*!< */
+	sf::Vector2f mAimDirection;/*!< */
+	sf::Vector2f mAimDirectionNormalized;/*!< */
 
-	Projectile mBullet;
-	std::vector<Projectile> mBullets;
+	Projectile mBullet;/*!< */
+	std::vector<Projectile> mBullets;/*!< */
 
 	// Horloge
-	sf::Clock mBulletClock;
-	sf::Clock invulnerableClock;
-	sf::Clock clock; 
-	float mTimeAccumulator;
-	float mBulletDelay;
+	sf::Clock mBulletClock;/*!< */
+	sf::Clock invulnerableClock;/*!< */
+	sf::Clock clock; /*!< */
+	float mTimeAccumulator;/*!< */
+	float mBulletDelay;/*!< */
 
-	float timePassed; // Temps écouler
-	float switchTime = 0.3f; // Temps que prend une frame d'animation
-	int currentFrame = 0; // On comment à la 1ère frame
+	float timePassed;/*!< */ // Temps écouler
+	float switchTime = 0.3f;/*!< */ // Temps que prend une frame d'animation
+	int currentFrame = 0;/*!< */ // On comment à la 1ère frame
 
-	float invulnerableTimer;
+	float invulnerableTimer;/*!< */
 
 	//Stats
-	bool invulnerable;
+	bool invulnerable;/*!< */
 };
 

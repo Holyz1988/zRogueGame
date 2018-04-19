@@ -67,13 +67,13 @@ void Enemy::updatePos()
 	this->sprite.setPosition(this->rect.getPosition().x - 16, this->rect.getPosition().y - 17);
 }
 
-//Déssine les ennemies à l'écran 
 void Enemy::drawEnemies(std::vector<Enemy>& enemies, sf::RenderWindow& window)
 {
 	for (size_t i = 0; i < enemies.size(); i++)
 	{
 		//window.draw(enemies[i].rect);
 		window.draw(enemies[i].sprite);
+		window.draw(enemies[i].text);
 	}
 }
 
@@ -150,9 +150,10 @@ void Enemy::moveEnemies(float dt, std::vector<Wall>& walls)
 
 	//Synchronise le rectangle et le sprite
 	updatePos();
+	text.setString(to_string(currentHp) + "/" + to_string(maxHP));
+	text.setPosition(rect.getPosition().x, rect.getPosition().y - rect.getSize().y / 2);
 }
 
-//Fait apparaître les enemies à l'écran
 void Enemy::spawEnemies(std::vector<Enemy>& enemies, Enemy& enemy)
 {
 	for (int i = 0; i < INITIAL_ENEMY_NUMBER; i++)
@@ -164,9 +165,6 @@ void Enemy::spawEnemies(std::vector<Enemy>& enemies, Enemy& enemy)
 	}
 }
 
-//Permet de définir la trajectoire des boules de feu
-//se déplace vers l'axe X du joueur lors de l'apparition
-//de la boule
 void Enemy::updateMovement(std::vector<Enemy>& enemies, sf::RenderWindow& window, float dt)
 {
 	for (size_t i = 0; i < enemies.size(); i++)
@@ -176,7 +174,6 @@ void Enemy::updateMovement(std::vector<Enemy>& enemies, sf::RenderWindow& window
 	}
 }
 
-//Permet de faire apparaître les boules de feu
 void Enemy::spawnFireBalls(std::vector<Enemy>& fireBalls, Enemy& fireBall, Player& player)
 {
 	if (mSpawnCounter < 200)
@@ -195,6 +192,11 @@ void Enemy::updateV(Player& player)
 	this->playerCenter = sf::Vector2f(player.rect.getPosition().x + player.rect.getSize().x / 2.f, player.rect.getPosition().y + player.rect.getSize().y / 2.f);
 	this->aimDirection = rect.getPosition() - playerCenter;
 	this->aimDirectionNormalized = aimDirection / (sqrt(pow(aimDirection.x, 2) + pow(aimDirection.y, 2)));
+
+	if (currentHp = maxHP)
+	{
+		maxHP = maxHP * player.level;
+	}
 }
 
 void Enemy::setVelocity(sf::Vector2f velocity)

@@ -231,17 +231,18 @@ bool Database::resetPlayer(int id)
 	std::string query = "UPDATE Player SET maxHP=?, attackDamage=?, level=?, currency=?, currentXP=?, expNeeded=?, bulletRadius=?, bulletDelay=? WHERE idPlayer=?";
 	sqlite3_stmt * stmt;
 	sqlite3_prepare_v2(db, query.c_str(), strlen(query.c_str()) + 1, &stmt, NULL);
+	Player player;
 
 	//Création des bind, comme en csharp, on remplace les ? par les valeurs
 	//sqlite3_bind_text(stmt, 1, player.maxHP.c_str(), strlen(produit->nom.c_str()), 0);
-	sqlite3_bind_int(stmt, 1, 100);
-	sqlite3_bind_int(stmt, 2, 100);
-	sqlite3_bind_int(stmt, 3, 1);
-	sqlite3_bind_int(stmt, 4, 0);
-	sqlite3_bind_int(stmt, 5, 0);
-	sqlite3_bind_int(stmt, 6, 200);
-	sqlite3_bind_double(stmt, 7, 4.0);
-	sqlite3_bind_double(stmt, 8, 1.0);
+	sqlite3_bind_int(stmt, 1, player.maxHP);
+	sqlite3_bind_int(stmt, 2, player.attackDamage);
+	sqlite3_bind_int(stmt, 3, player.level);
+	sqlite3_bind_int(stmt, 4, player.currency);
+	sqlite3_bind_int(stmt, 5, player.mCurrentExperience);
+	sqlite3_bind_int(stmt, 6, player.mExperienceNeeded);
+	sqlite3_bind_double(stmt, 7, player.getBullet().circle.getRadius());
+	sqlite3_bind_double(stmt, 8, player.getBulletDelay());
 	sqlite3_bind_int(stmt, 9, id);
 	sqlite3_step(stmt);
 	sqlite3_finalize(stmt);

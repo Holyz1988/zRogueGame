@@ -1,6 +1,6 @@
 ﻿  Player.cpp
-c:\users\amine\desktop\projet\zroguegame\zroguegame\zroguegame\player.cpp(181): warning C4244: '*=' : conversion de 'double' en 'int', perte possible de données
-c:\users\amine\desktop\projet\zroguegame\zroguegame\zroguegame\player.cpp(183): warning C4305: '-=' : troncation de 'double' à 'float'
+c:\users\amine\desktop\projet\zroguegame\zroguegame\zroguegame\player.cpp(185): warning C4244: '*=' : conversion de 'double' en 'int', perte possible de données
+c:\users\amine\desktop\projet\zroguegame\zroguegame\zroguegame\player.cpp(187): warning C4305: '-=' : troncation de 'double' à 'float'
   zRogueGame.vcxproj -> C:\Users\Amine\Desktop\PROJET\zRogueGame\zRogueGame\Debug\zRogueGame.exe
   zRogueGame.vcxproj -> C:\Users\Amine\Desktop\PROJET\zRogueGame\zRogueGame\Debug\zRogueGame.pdb (Partial PDB)
 c:\users\amine\desktop\projet\zroguegame\zroguegame\zroguegame\sqlite3.c(43424): warning BK4504: le fichier contient trop de rÚfÚrencesá; les rÚfÚrences ultÚrieures provenant de cette source seront ignorÚes
