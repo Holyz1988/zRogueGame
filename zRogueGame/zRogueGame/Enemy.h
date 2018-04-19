@@ -3,6 +3,7 @@
 #include "RessourceHolder.h"
 #include "Player.h"
 #include "Wall.h"
+#include "TextDisplay.h"
 
 /**
 * \file			Enemy.h
@@ -74,7 +75,7 @@ public:
 	*Déssines les énemies
 	*
 	* \param enemies : référence du vecteur d'énemies à déssiner
-	* \param enemy : référence de la fenêtre sur laquelle on veut déssiner
+	* \param window : référence de la fenêtre sur laquelle on veut déssiner
 	*/
 	void drawEnemies(std::vector<Enemy>& enemies, sf::RenderWindow& window);
 
@@ -83,7 +84,7 @@ public:
 	*
 	*Gestion de la collision entre un énemie et un mur
 	*
-	* \param enemies : référence du vecteur de mur sur lequel on vérifie s'il y a collision
+	* \param walls : référence du vecteur de mur sur lequel on vérifie s'il y a collision
 	* \param previousPos : position du joueur lors de l'itération précédente
 	*/
 	void wallCollision(std::vector<Wall>& walls, sf::Vector2f previousPos);
@@ -120,9 +121,11 @@ public:
 	*Fait apparaître les enemies à l'écran
 	*
 	* \param enemies : référence vers le vecteur d'énemies
-	* \param enemie : référence de l'énemie à rajouter au vecteur d'énemies
+	* \param enemy : référence de l'énemie à rajouter au vecteur d'énemies
+	* \param spawnTile : Tuile qui fait apparaitre les monstres
+	* \param player : référence vers un joueur
 	*/
-	void Enemy::spawEnemies(std::vector<Enemy>& enemies, Enemy& enemy);
+	void spawEnemies(std::vector<Enemy>& enemies, Enemy& enemy, Wall& spawnTile, Player& player);
 
 	//GETTER & SETTER
 	/**

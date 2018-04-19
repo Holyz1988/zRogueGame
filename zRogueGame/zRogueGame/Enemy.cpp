@@ -19,12 +19,12 @@ timePassed(0),
 currentFrame(0)
 {
 	this->level = 1;
-	this->experienceGiven = 50;
+	this->experienceGiven = 30;
 	this->rect.setSize(sf::Vector2f(32.f, 50.f));
 	this->rect.setFillColor(sf::Color::White);
-	this->currency = 10;
-	this->maxHP = 100;
-	this->attackDamage = 20;
+	this->currency = level * 10;
+	this->maxHP = level * 100;
+	this->attackDamage = level * 20;
 	this->mSpeed = 250.f;
 	this->currentHp = maxHP;
 }
@@ -39,12 +39,12 @@ timePassed(0),
 currentFrame(0)
 {
 	this->level = player.level;
-	this->experienceGiven = 8;
+	this->experienceGiven = 10 * player.level;
 	this->rect.setSize(sf::Vector2f(32.f, 50.f));
 	this->rect.setFillColor(sf::Color::White);
-	this->currency = 10;
-	this->maxHP = 100;
-	this->attackDamage = 20;
+	this->currency = 20;
+	this->maxHP = 100 * player.level;
+	this->attackDamage = 20 + (10 * player.level);
 	this->mSpeed = 250.f;
 	this->currentHp = maxHP;
 }
@@ -71,7 +71,6 @@ void Enemy::drawEnemies(std::vector<Enemy>& enemies, sf::RenderWindow& window)
 {
 	for (size_t i = 0; i < enemies.size(); i++)
 	{
-		//window.draw(enemies[i].rect);
 		window.draw(enemies[i].sprite);
 		window.draw(enemies[i].text);
 	}
@@ -110,7 +109,7 @@ void Enemy::moveEnemies(float dt, std::vector<Wall>& walls)
 	{
 		direction = (rand() % 4) + 1;
 	}
-	
+
 	mDirection = static_cast<Direction>(direction);
 
 	//L'énnemi se déplace pendant 3 secondes avant de changer de direction
@@ -122,7 +121,7 @@ void Enemy::moveEnemies(float dt, std::vector<Wall>& walls)
 		case Direction::DOWN:
 			this->rect.move(0, mVelocity.y * dt);
 			this->sprite.setTextureRect(sf::IntRect(currentFrame * 64, 10 * 64, 64, 64));
-			break;	
+			break;
 		case Direction::LEFT:
 			this->rect.move(-mVelocity.x * dt, 0);
 			this->sprite.setTextureRect(sf::IntRect(currentFrame * 64, 9 * 64, 64, 64));
@@ -154,11 +153,20 @@ void Enemy::moveEnemies(float dt, std::vector<Wall>& walls)
 	text.setPosition(rect.getPosition().x, rect.getPosition().y - rect.getSize().y / 2);
 }
 
-void Enemy::spawEnemies(std::vector<Enemy>& enemies, Enemy& enemy)
+void Enemy::spawEnemies(std::vector<Enemy>& enemies, Enemy& enemy, Wall& spawnTile, Player& player)
 {
 	for (int i = 0; i < INITIAL_ENEMY_NUMBER; i++)
 	{
-		enemy.rect.setPosition((rand() % (32 * 36)) + 32, (rand() % (32 * 10)) + 50);
+		do
+		{
+			//On met les nouvelles stats aux orcs
+			enemy.rect.setPosition((rand() % (32 * 36)) + 32, (rand() % (32 * 10)) + 50);
+			enemy.level = player.level;
+			enemy.maxHP = player.level * 100;
+			enemy.currentHp = enemy.maxHP;
+			enemy.attackDamage = player.level * 20;
+		} while (enemy.rect.getGlobalBounds().intersects(spawnTile.rect.getGlobalBounds()));
+
 		enemy.sprite.setPosition(enemy.rect.getPosition());
 		enemy.clockOrc.restart();//on redemarre l'horloge pour l'animation
 		enemies.push_back(enemy);
@@ -176,9 +184,9 @@ void Enemy::updateMovement(std::vector<Enemy>& enemies, sf::RenderWindow& window
 
 void Enemy::spawnFireBalls(std::vector<Enemy>& fireBalls, Enemy& fireBall, Player& player)
 {
-	if (mSpawnCounter < 200)
+	if (mSpawnCounter < 50)
 		mSpawnCounter++;
-	if (mSpawnCounter >= 200)
+	if (mSpawnCounter >= 50)
 	{
 		fireBall.rect.setPosition(0, player.rect.getPosition().y);
 		fireBall.setVelocity(aimDirectionNormalized * mSpeed);

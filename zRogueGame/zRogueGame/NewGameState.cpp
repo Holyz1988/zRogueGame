@@ -100,7 +100,9 @@ void NewGameState::handleInput()
 		}
 
 		if (event.key.code == sf::Keyboard::Escape)
+		{
 			this->_data->machine.removeState();
+		}
 	}
 }
 

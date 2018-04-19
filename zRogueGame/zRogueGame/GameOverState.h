@@ -106,4 +106,6 @@ private:
 	RessourceHolder ressources;/*!< Objet RessourceHolder, stock les textures et les fonts*/
 	sf::Sprite gameOverBackground;/*!< Sprite du fond d'écran*/
 	std::vector<sf::Text> mButtons;/*!< Bouttons affichés lors de la fin de partie*/
+
+	sf::Music bgMusic;/*!< Musique de fond*/
 };

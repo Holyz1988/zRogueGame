@@ -4,14 +4,18 @@
 #include <iostream>
 #include <math.h>
 
+#include <iostream>
+
 using namespace std;
 
 PlayState::PlayState(GameDataRef data, Player& player) : _data(data),
-mPlayer(player)
+mPlayer(player),
+mOrc(mPlayer)
 {
 }
 
-PlayState::PlayState(GameDataRef data) : _data(data)
+PlayState::PlayState(GameDataRef data) : _data(data),
+mOrc(mPlayer)
 {
 }
 
@@ -62,18 +66,64 @@ void PlayState::init()
 
 	//Chargement de la police du HUD
 	mRessources.loadFont("HUDFont", "ressources/Lobster-Regular.ttf");
+	mRessources.loadFont("OverlayFont", "ressources/gomarice_game_continue_02.ttf");
 	HPText.text.setFont(mRessources.getFont("HUDFont"));
 	EXPText.text.setFont(mRessources.getFont("HUDFont"));
 	currencyText.text.setFont(mRessources.getFont("HUDFont"));
 	levelText.text.setFont(mRessources.getFont("HUDFont"));
+	potionText.text.setFont(mRessources.getFont("HUDFont"));
+	buyingPotionText.text.setFont(mRessources.getFont("HUDFont"));
+	buyingExpText.text.setFont(mRessources.getFont("HUDFont"));
+
 
 	//Police joueur
 	mPlayer.text.setFont(mRessources.getFont("HUDFont"));
 	mPlayer.text.setCharacterSize(14);
+	mPlayer.text.setOutlineColor(sf::Color::Black);
+	mPlayer.text.setOutlineThickness(1.f);
 
 	//Police monstre
 	mOrc.text.setFont(mRessources.getFont("HUDFont"));
 	mOrc.text.setCharacterSize(14);
+	mOrc.text.setOutlineColor(sf::Color::Black);
+	mOrc.text.setOutlineThickness(1.f);
+
+	//Police Tuile spawner
+	mSpawnTile.text.setFont(mRessources.getFont("OverlayFont"));
+	mSpawnTile.text.setCharacterSize(20);
+	mSpawnTile.text.setFillColor(sf::Color::White);
+	mSpawnTile.text.setOutlineColor(sf::Color::Red);
+	mSpawnTile.text.setOutlineThickness(2.f);
+
+	//Police HP ORC
+	mPlayer.hpOrcLost.text.setFont(mRessources.getFont("OverlayFont"));
+	mPlayer.hpOrcLost.text.setCharacterSize(30);
+	mPlayer.hpOrcLost.text.setFillColor(sf::Color::Red);
+	mPlayer.hpOrcLost.text.setOutlineThickness(2.f);
+	mPlayer.hpOrcLost.text.setOutlineColor(sf::Color::Black);
+
+	//Music et sons
+	if (!backGroundMusic.openFromFile("music.ogg"))
+	{
+		cout << "erreur" << endl;
+	}
+	backGroundMusic.setLoop(true);
+	backGroundMusic.play();
+	backGroundMusic.setVolume(20);
+
+	if (!bufferPlayerHit.loadFromFile("playerhit.ogg"))
+	{
+		cout << "erreur" << endl;
+	}
+	soundHit.setBuffer(bufferPlayerHit);
+	soundHit.setVolume(20);
+
+	if (!bufferFireBullet.loadFromFile("shot.ogg"))
+	{
+		cout << "erreur" << endl;
+	}
+	soundBullet.setBuffer(bufferFireBullet);
+	soundBullet.setVolume(20);
 
 	db = new Database();
 	db->openDatabase();
@@ -98,10 +148,50 @@ void PlayState::handleInput()
 		//Spawns orcs
 			if (event.key.code == sf::Keyboard::E)
 			{
-				if (mPlayer.getSpawnerStatus() && !mTile.locked)
+				if (mPlayer.getSpawnerStatus() && !mSpawnTile.locked)
 				{
-					mTile.locked = true;
-					mOrc.spawEnemies(mOrcs, mOrc);
+					mSpawnTile.locked = true;
+					mOrc.spawEnemies(mOrcs, mOrc, mSpawnTile, mPlayer);
+				}
+			}
+			//Utilisation de potions
+			if (event.key.code == sf::Keyboard::R)
+			{
+				if (mPlayer.potion.quantity > 0)
+				{
+					//Si le joueur n'est pas au maximum de sa vie, on utilise une potion
+					if (mPlayer.currentHp != mPlayer.maxHP)
+					{
+						mPlayer.potion.quantity--;
+						mPlayer.currentHp += 50;
+						if (mPlayer.currentHp > mPlayer.maxHP)
+						{
+							mPlayer.currentHp = mPlayer.maxHP;
+						}
+					}
+					else
+					{
+						//Ne rien faire
+					}
+				}
+			}
+
+			//Achat de potion et d'experience
+			if (event.key.code == sf::Keyboard::F1)
+			{
+				if (mPlayer.currency >= 40)
+				{
+					mPlayer.currency -= 40;
+					mPlayer.potion.quantity++;
+				}
+			}
+
+			if (event.key.code == sf::Keyboard::F2)
+			{
+				if (mPlayer.currency >= 100)
+				{
+					mPlayer.currency -= 100;
+					mPlayer.mCurrentExperience += 100;
 				}
 			}
 			break;
@@ -117,13 +207,15 @@ void PlayState::update(float dt)
 	{
 		db->updatePlayer(mPlayer);
 		db->closeDatabase();
+		backGroundMusic.stop();
 		this->_data->machine.addState(StateRef(new GameOverState(this->_data)), true);
 	}
+
 
 	//Si tous les orcs meurent, on libère le spawner de mob
 	if (mOrcs.empty())
 	{
-		mTile.locked = false;
+		mSpawnTile.locked = false;
 	}
 
 	//Mise à jour des positions et actions enemies
@@ -142,15 +234,19 @@ void PlayState::update(float dt)
 	}
 
 	//Mise à jour des positions et actions du joueur
-	mPlayer.losingHp(mOrcs);
-//	mPlayer.fireBallBulletCollision(mFireBalls);
-	mPlayer.fireBullets(this->_data->window, mWalls);//MAJ des projectiles
+	mPlayer.losingHp(mOrcs, soundHit);
+	mPlayer.losingHpToFireBall(mFireBalls, soundHit);
+	mPlayer.fireBallPlayerCollision(mFireBalls);
+	mPlayer.fireBullets(this->_data->window, mWalls, soundBullet);//MAJ des projectiles
 	mPlayer.updateVectors(this->_data->window);//MAJ des positions joueur
 	mPlayer.update(dt, mWalls);//Met à jour la position du joueur
 	mPlayer.bulletOrcCollision(mOrcs); // Détruit le projectile joueur s'il rencontre un orc
 
 	//HUD
 	positionHUD(mPlayer);
+
+	//Apparition du message d'explication
+	spawnerPlayerCollision();
 
 	//On place la caméra
 	centerCamera();
@@ -177,26 +273,22 @@ void PlayState::draw(float dt)
 	//Orcs
 	mPlayer.spawnOrcs(mSpawnTile);
 	mOrc.drawEnemies(mOrcs, this->_data->window);
+	mPlayer.drawHpLost(this->_data->window);
 
 	//On dessine le HUD
 	this->_data->window.draw(HPText.text);
 	this->_data->window.draw(EXPText.text);
 	this->_data->window.draw(currencyText.text);
 	this->_data->window.draw(levelText.text);
+	this->_data->window.draw(potionText.text);
+	this->_data->window.draw(buyingPotionText.text);
+	this->_data->window.draw(buyingExpText.text);
+
 	this->_data->window.draw(mPlayer.text);
+
+	this->_data->window.draw(mSpawnTile.text);
 }
 
-
-void PlayState::pauseGame()
-{
-	//TODO
-	float posX = (float)this->_data->window.getSize().x;
-	float posY = (float)this->_data->window.getSize().y;
-
-	this->mCamera.setCenter(sf::Vector2f(posX / 2, posY / 2));
-	this->_data->machine.removeState();
-	this->_data->machine.addState(StateRef(new MenuState(this->_data)), true);
-}
 
 void PlayState::centerCamera()
 {
@@ -241,9 +333,54 @@ void PlayState::positionHUD(Player& player)
 	float levelPositionX;
 	float levelPositionY;
 
-	levelPositionX = mPlayer.rect.getPosition().x + this->_data->window.getSize().x / 2 - 140;
+	levelPositionX = mPlayer.rect.getPosition().x + this->_data->window.getSize().x / 2 - 120;
 	levelPositionY = mPlayer.rect.getPosition().y - this->_data->window.getSize().y / 2;
 
 	levelText.text.setString("Niveau : " + to_string(mPlayer.level));
 	levelText.text.setPosition(levelPositionX, levelPositionY);
+
+	//potionText
+	float potionPositionX;
+	float potionPositionY;
+
+	potionPositionX = mPlayer.rect.getPosition().x + this->_data->window.getSize().x / 2 - 120;
+	potionPositionY = mPlayer.rect.getPosition().y - this->_data->window.getSize().y / 2 + 25;
+
+	potionText.text.setString("Potions x " + to_string(mPlayer.potion.quantity));
+	potionText.text.setPosition(potionPositionX, potionPositionY);
+
+	//buyingPotionText
+	float buyingPotionPositionX;
+	float buyingPotionPositionY;
+
+	buyingPotionPositionX = mPlayer.rect.getPosition().x - this->_data->window.getSize().x / 2;
+	buyingPotionPositionY = mPlayer.rect.getPosition().y + 220;
+
+	buyingPotionText.text.setString("F1 : Potion de soin (40 Or)");
+	buyingPotionText.text.setPosition(buyingPotionPositionX, buyingPotionPositionY);
+
+
+	//buyingExpText
+	float buyingExpPositionX;
+	float buyingExpPositionY;
+
+	buyingExpPositionX = mPlayer.rect.getPosition().x - this->_data->window.getSize().x / 2;
+	buyingExpPositionY = mPlayer.rect.getPosition().y + 245;
+
+	buyingExpText.text.setString("F2 : 100 EXP (100 Or)");
+	buyingExpText.text.setPosition(buyingExpPositionX, buyingExpPositionY);
+}
+
+void PlayState::spawnerPlayerCollision()
+{
+	std::cout << mSpawnTile.locked << std::endl;
+	if (mPlayer.rect.getGlobalBounds().intersects(mSpawnTile.rect.getGlobalBounds()) && !mSpawnTile.locked)
+	{
+			mSpawnTile.text.setPosition(mPlayer.rect.getPosition().x - 200, mPlayer.rect.getPosition().y - 200);
+			mSpawnTile.text.setString("Appuyer sur E pour faire apparaitre la vague d'ennemis");
+	}
+	else
+	{
+		mSpawnTile.text.setString("");
+	}
 }

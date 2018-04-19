@@ -21,11 +21,9 @@ void GameOverState::init()
 
 	mButtons.push_back(text);
 	mButtons.push_back(text);
-	mButtons.push_back(text);
 
-	mButtons[0].setString("Continuer");
-	mButtons[1].setString("Retourner au menu");
-	mButtons[2].setString("Quitter");
+	mButtons[0].setString("Retourner au menu");
+	mButtons[1].setString("Quitter");
 
 	for (unsigned int i = 0; i < mButtons.size(); i++)
 	{
@@ -37,6 +35,15 @@ void GameOverState::init()
 
 	mCamera.reset(sf::FloatRect(0,0,800, 600));
 	this->_data->window.setView(mCamera);
+
+	//Music et sons
+	if (!bgMusic.openFromFile("nice_music.ogg"))
+	{
+		throw std::runtime_error("Failed to load nice_music.ogg");
+	}
+	bgMusic.setLoop(true);
+	bgMusic.play();
+	bgMusic.setVolume(20);
 }
 
 void GameOverState::handleInput()
@@ -63,14 +70,12 @@ void GameOverState::handleInput()
 			{
 				if (isTextClicked(mButtons[0]))
 				{
-					//Loadplayer
+					bgMusic.stop();
+					loadMenu();
 				}
 				else if (isTextClicked(mButtons[1]))
 				{
-					loadMenu();
-				}
-				else if (isTextClicked(mButtons[2]))
-				{
+					bgMusic.stop();
 					this->_data->window.close();
 				}
 			}

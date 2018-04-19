@@ -72,7 +72,7 @@ public:
 	*
 	*Insert un joueur en BDD
 	*
-	* \param Joueur : stock tout ce qui compose un joueur que l'on va insérer en BDD
+	* \param player : stock tout ce qui compose un joueur que l'on va insérer en BDD
 	*
 	* \return Un booléen qui nous informe si la requête s'est bien éxécuté ou pas
 	*/
@@ -123,7 +123,7 @@ public:
 	*
 	*Mise à jour en base de données avec les statistiques par défaut du joueur, ce qui va "créer" un nouveau joueur
 	*
-	* \param player : identifiant du joueur
+	* \param id : identifiant du joueur
 	*
 	* \return Un booléen qui nous informe du succès ou non de la requête
 	*/

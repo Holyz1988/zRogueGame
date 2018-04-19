@@ -7,6 +7,7 @@
 #include "Wall.h"
 #include "Database.h"
 #include "TextDisplay.h"
+//#include "SFML\Audio.hpp"
 
 /**
 * \file			PlayState.h
@@ -54,7 +55,6 @@ public:
 	*
 	*Destructeur de l'état jouer
 	*
-	* \param data : stock les données communes associées à chaque état (fenêtre, état actuel)
 	*/
 	~PlayState();
 
@@ -86,7 +86,7 @@ public:
 	/**
 	* \brief	affiche l'état jouer
 	*
-	*affiche l'état jouer
+	*Met à jour la position du joueur, Gère l'animation du joueur, Gère les collisions, Met à jour le sprite et le rectangle du joueur
 	*
 	* \param dt : temps que met une itération
 	*/
@@ -95,13 +95,28 @@ public:
 private:
 
 	//void pauseGame();
+	/**
+	* \brief	Centre la caméra sur le joueur
+	*
+	*Centre la caméra sur le joueur
+	*
+	*/
 	void centerCamera();
 
 
 	//void updateVectors();
 	//void fireBullets();
 	//void drawBullets();
+
+	/**
+	* \brief	Place les informations du joueur et de la partie à l'écran, c'est le HUD
+	*
+	*Place les informations du joueur et de la partie à l'écran, c'est le HUD
+	*
+	*/
 	void positionHUD(Player& player);
+
+	void spawnerPlayerCollision();
 
 private:
 	Database* db;/*!< Pointeur vers un objet database, permet la communication avec la BDD*/
@@ -114,7 +129,7 @@ private:
 	Player mPlayer;/*!< Objet joueur*/
 
 	//Dragon
-	Enemy mDragon;/*!< */
+	Enemy mDragon;/*!< Objet représentant un dragon*/
 
 	//Boules de feu
 	Enemy mFireBall;/*!< */
@@ -140,5 +155,14 @@ private:
 	TextDisplay EXPText;/*!< Exp du joueur*/
 	TextDisplay currencyText;/*!< Argent du joueur*/
 	TextDisplay levelText;/*!< Niveau du joueur*/
+	TextDisplay potionText;/*!< nombre de potion*/
+	TextDisplay buyingPotionText;/*!< touche qu'il faut utlisier pour acheter une potion*/
+	TextDisplay buyingExpText;/*!< touche qu'il faut utlisier pour acheter 100 EXP*/
+
+	sf::Music backGroundMusic;/*!< Musique de fond*/
+	sf::SoundBuffer bufferFireBullet;/*!< buffer du son projecile*/
+	sf::SoundBuffer bufferPlayerHit;/*!< buffer du son joueur touché*/
+	sf::Sound soundBullet;/*!< son projecile*/
+	sf::Sound soundHit;/*!< son joueur touché*/
 };
 

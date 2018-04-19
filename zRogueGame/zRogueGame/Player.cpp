@@ -7,6 +7,7 @@ using namespace std;
 Player::Player() : invulnerable(false),
 mSpawnerStatus(false)
 {
+	this->potion.quantity = 3;
 	this->mBulletDelay = 0.2f;
 	this->level = 1;
 	this->mCurrentExperience = 0;
@@ -21,10 +22,6 @@ mSpawnerStatus(false)
 	rect.setFillColor(sf::Color::White);
 }
 
-//Met à jour la position du joueur
-//Gère l'animation du joueur
-//Gère les collisions
-//Met à jour le sprite et le rectangle du joueur
 void Player::update(float dt, std::vector<Wall>& walls)
 {
 	//cout << "Level : " << level << " | currentXP : " << mCurrentExperience << " | XP Needed : " << mExperienceNeeded << " ID : " << idPlayer << endl;
@@ -72,9 +69,9 @@ void Player::update(float dt, std::vector<Wall>& walls)
 
 	levelUp();
 	updateHP();
+	updateTextDamage(dt);
 }
 
-//Test si il y a une collision entre un ennemi et le joueur
 bool Player::fireBallCollision(Enemy& enemy)
 {
 	if (this->rect.getGlobalBounds().intersects(enemy.rect.getGlobalBounds()))
@@ -85,7 +82,6 @@ bool Player::fireBallCollision(Enemy& enemy)
 		return false;
 }
 
-//Test si il y a une collision entre un mur et les projectiles
 bool Player::collisionBulletWall(Wall& wall)
 {
 	if (mBullet.rect.getGlobalBounds().intersects(wall.rect.getGlobalBounds()))
@@ -94,7 +90,6 @@ bool Player::collisionBulletWall(Wall& wall)
 		return false;
 }
 
-//Collision entre tous les murs de l'arène et le joueur
 void Player::wallCollision(std::vector<Wall>& walls, sf::Vector2f previousPos)
 {
 	for (unsigned int i = 0; i < walls.size(); i++)
@@ -117,6 +112,12 @@ void Player::bulletOrcCollision(std::vector<Enemy>& orcs)
 				//L'orc touché perds des pv
 				orcs[j].currentHp -= attackDamage;
 
+				//Hp perdus
+				hpOrcLost.text.setString(to_string(attackDamage));
+				hpOrcLost.text.setPosition(orcs[j].rect.getPosition().x, orcs[j].rect.getPosition().y);
+				hpOrcLost.textClock.restart();
+				vectorHpOrcLost.push_back(hpOrcLost);
+
 				if (orcs[j].currentHp <= 0)
 				{
 					orcs[j].currentHp = 0;
@@ -132,26 +133,21 @@ void Player::bulletOrcCollision(std::vector<Enemy>& orcs)
 	}
 }
 
-//Collision projectile joueur et projectile dragon
-/*
-void Player::fireBallBulletCollision(std::vector<Enemy>& enemies)
+
+//Collision boule de feu et joueur
+void Player::fireBallPlayerCollision(std::vector<Enemy>& enemies)
 {
-	for (size_t i = 0; i < mBullets.size(); i++)
+	for (size_t i = 0; i < enemies.size(); i++)
 	{
-		for (size_t j = 0; j < enemies.size(); j++)
-		{
-			if (enemies[j].rect.getGlobalBounds().intersects(mBullets[i].circle.getGlobalBounds()))
+			if (enemies[i].rect.getGlobalBounds().intersects(rect.getGlobalBounds()))
 			{
-				enemies.erase(enemies.begin() + j);
-				mBullets.erase(mBullets.begin() + i);
+				enemies.erase(enemies.begin() + i);
 				break;
 			}
-		}
 	}
 }
-*/
 
-void Player::losingHp(std::vector<Enemy>& enemy)
+void Player::losingHpToFireBall(std::vector<Enemy>& enemy, sf::Sound & sound)
 {
 	//On commence par vérifier si le temps d'invulnérabilité est passé
 	resetInvulnerableTimer();
@@ -165,6 +161,39 @@ void Player::losingHp(std::vector<Enemy>& enemy)
 		{
 			if (!invulnerable) // 2 secondes d'invulnérabilités
 			{
+				if (this->currentHp == 1)
+				{
+					this->currentHp = 0;
+				}
+				else
+				{
+					sound.play();
+					this->currentHp = 1;
+					invulnerable = true;
+					invulnerableTimer = 0;
+					sprite.setColor(sf::Color(255, 0, 0, 255));//Change la couleur du sprite à rouge
+				}
+			}
+		}
+	}
+}
+
+
+void Player::losingHp(std::vector<Enemy>& enemy, sf::Sound& sound)
+{
+	//On commence par vérifier si le temps d'invulnérabilité est passé
+	resetInvulnerableTimer();
+
+	for (unsigned i = 0; i < enemy.size(); i++)
+	{
+		if (!invulnerable)
+			sprite.setColor(sf::Color(255, 255, 255, 255));//Remet la couleur du sprite d'origine 
+
+		if (fireBallCollision(enemy[i]))
+		{
+			if (!invulnerable) // 2 secondes d'invulnérabilités
+			{
+				sound.play();
 				this->currentHp -= enemy[i].getDamage();
 				invulnerable = true;
 				invulnerableTimer = 0;
@@ -177,7 +206,6 @@ void Player::losingHp(std::vector<Enemy>& enemy)
 	}
 }
 
-//MAJ des stats du joueur
 void Player::levelUp()
 {
 	if (mCurrentExperience >= mExperienceNeeded)
@@ -187,7 +215,7 @@ void Player::levelUp()
 		mExperienceNeeded *= 1.50;
 		mBullet.circle.setRadius(mBullet.circle.getRadius() + 1);
 		mBulletDelay -= 0.01;
-		attackDamage += 10;
+		attackDamage += 6;
 		maxHP += 50;
 		currentHp = maxHP;
 	}
@@ -198,8 +226,7 @@ bool Player::isDead()
 	return (currentHp <= 0);
 }
 
-//Lorsque l'on clique gauche sur la souris, on charge les projectiles dans un vecteur
-void Player::fireBullets(sf::RenderWindow& window, std::vector<Wall> walls)
+void Player::fireBullets(sf::RenderWindow& window, std::vector<Wall> walls, sf::Sound& sound)
 {
 	mTimeAccumulator += mBulletClock.restart().asSeconds();
 	// Accumule temps, on charge et on tire
@@ -208,23 +235,45 @@ void Player::fireBullets(sf::RenderWindow& window, std::vector<Wall> walls)
 	{
 		mBullet.circle.setPosition(mPlayerCenter);
 		mBullet.setVelocity(mAimDirectionNormalized * mBullet.getSpeed());
+		sound.play();
 		mBullets.push_back(mBullet);
 		mTimeAccumulator = 0; // On remet à 0 le chrono.
 	}
 	
 }
 
-//On déssine les projectiles joueur à l'écran
 void Player::drawBullets(sf::RenderWindow & window)
 {
 	for (size_t i = 0; i < mBullets.size(); i++)
 	{
-		cout << mBullets[i].getSpeed() << endl;
 		window.draw(mBullets[i].circle);
 	}
 }
 
-//Permet de calculer la direction normalisé
+void Player::drawHpLost(sf::RenderWindow& window)
+{
+	for (int i = 0; i < vectorHpOrcLost.size(); i++)
+	{
+		window.draw(vectorHpOrcLost[i].text);
+	}
+}
+
+void Player::updateTextDamage(float dt)
+{
+
+	for (int i = 0; i < vectorHpOrcLost.size(); i++)
+	{
+		if (vectorHpOrcLost[i].textClock.getElapsedTime().asSeconds() > 3.0f)
+		{
+			vectorHpOrcLost.erase(vectorHpOrcLost.begin() + i);
+		}
+		else
+		{
+			vectorHpOrcLost[i].text.move(0, - 140.f * dt);
+		}
+	}
+}
+
 void Player::updateVectors(sf::RenderWindow& window)
 {
 	mPlayerCenter = sf::Vector2f(rect.getPosition().x + rect.getSize().x / 2.f, rect.getPosition().y + rect.getSize().y / 2.f);
@@ -234,14 +283,12 @@ void Player::updateVectors(sf::RenderWindow& window)
 	mAimDirectionNormalized = mAimDirection / (sqrt(pow(mAimDirection.x, 2) + pow(mAimDirection.y, 2)));
 }
 
-//Met à jour les HP joueur
 void Player::updateHP()
 {
 	text.setString(to_string(currentHp) + "/" + to_string(maxHP));
 	text.setPosition(rect.getPosition().x, rect.getPosition().y - rect.getSize().y / 2);
 }
 
-//Collision mur et tir du joueur
 void Player::bulletWallCollision(std::vector<Wall>& walls)
 {
 	for (size_t i = 0; i < mBullets.size(); i++)
@@ -258,7 +305,6 @@ void Player::bulletWallCollision(std::vector<Wall>& walls)
 	}
 }
 
-//Permet de retirer l'invulnérabilité
 void Player::resetInvulnerableTimer()
 {
 	invulnerableTimer += invulnerableClock.restart().asSeconds();
@@ -270,8 +316,6 @@ void Player::resetInvulnerableTimer()
 	}
 }
 
-//Si le joueur a une collision avec le spawner
-//Fait apparaître les mobs
 void Player::spawnOrcs(Wall& spawnTile)
 {
 	if (rect.getGlobalBounds().intersects(spawnTile.rect.getGlobalBounds()))

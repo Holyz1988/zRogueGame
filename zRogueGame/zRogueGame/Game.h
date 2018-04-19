@@ -2,11 +2,12 @@
 #include <memory>
 #include <string>
 #include "SFML\Graphics.hpp"
+#include "SFML\Audio.hpp"
 #include "StateMachine.h"
 
 /**
-* \file			Data.h
-* \author		Amine ZEGHAD
+* \file	Game.h
+* \author	Amine ZEGHAD
 * \version		1.0
 * \date			19 april 2018
 * \brief		données du jeu
@@ -53,6 +54,7 @@ public:
 	void run();
 
 private:
+	sf::Music bgMusic;/*!< Musique de fond*/
 	const float dt = 1 / 60.0f;/*!< Temps que met chaque itération*/
 	sf::Clock _clock;/*!< Horloge du jeu*/
 

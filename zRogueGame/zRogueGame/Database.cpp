@@ -1,7 +1,6 @@
 #include "database.h"
 #include <stdio.h>
 #include <cstring>
-#include <iostream>
 
 Database::Database()
 {
@@ -38,7 +37,7 @@ bool Database::executeQuery(std::string query)
 	//3ème paramètre NULL
 	if (sqlite3_exec(db, query.c_str(), NULL, 0, &errmsg) != SQLITE_OK)
 	{
-		std::cout << errmsg << std::endl;
+		//std::cout << errmsg << std::endl;
 		return false;
 	}
 	else
@@ -59,6 +58,7 @@ bool Database::insertPlayer(Player& player)
 	char bExpNeeded[100];
 	char bBulletRadius[100];
 	char bBulletDelay[100];
+	char bPotionQty[100];
 	sprintf_s(bMaxHP, "%d", player.maxHP);
 	sprintf_s(bAttackDamage, "%d", player.attackDamage);
 	sprintf_s(bLevel, "%d", player.level);
@@ -67,6 +67,7 @@ bool Database::insertPlayer(Player& player)
 	sprintf_s(bExpNeeded, "%d", player.mExperienceNeeded);
 	sprintf_s(bBulletRadius, "%f", player.getBullet().circle.getRadius());
 	sprintf_s(bBulletDelay, "%f", player.getBulletDelay());
+	sprintf_s(bPotionQty, "%d", player.getBulletDelay());
 
 	std::string query = "INSERT INTO Player VALUES (";
 
@@ -87,9 +88,11 @@ bool Database::insertPlayer(Player& player)
 	query += bBulletRadius;
 	query += ",";
 	query += bBulletDelay;
+	query += ",";
+	query += bPotionQty;
 	query += ")";
 
-	std::cout << query << std::endl;
+	//std::cout << query << std::endl;
 
 	return executeQuery(query);
 }
@@ -119,7 +122,7 @@ int Database::getPlayerNumber()
 		}
 		else
 		{
-			std::cout << "no rows" << std::endl;
+			//std::cout << "no rows" << std::endl;
 		}
 	} while (i == SQLITE_ROW); //Tant qu'il y a des données, on itère !
 
@@ -159,12 +162,9 @@ std::vector<Player> Database::getAllPlayer()
 			player.mExperienceNeeded = sqlite3_column_int(stmt, 6);
 			player.setBulletRadius(sqlite3_column_double(stmt, 7));
 			player.setBulletDelay(sqlite3_column_double(stmt, 8));
+			player.potion.quantity = sqlite3_column_int(stmt, 9);
 
 			players.push_back(player);
-		}
-		else
-		{
-			std::cout << "no rows" << std::endl;
 		}
 	} while (i == SQLITE_ROW); //Tant qu'il y a des données, on itère !
 
@@ -173,7 +173,7 @@ std::vector<Player> Database::getAllPlayer()
 
 bool Database::updatePlayer(Player& player)
 {
-	std::string query = "UPDATE Player SET maxHP=?, attackDamage=?, level=?, currency=?, currentXP=?, expNeeded=?, bulletRadius=?, bulletDelay=? WHERE idPlayer=?";
+	std::string query = "UPDATE Player SET maxHP=?, attackDamage=?, level=?, currency=?, currentXP=?, expNeeded=?, bulletRadius=?, bulletDelay=?, potionQty=? WHERE idPlayer=?";
 	sqlite3_stmt * stmt;
 	sqlite3_prepare_v2(db, query.c_str(), strlen(query.c_str()) + 1, &stmt, NULL);
 
@@ -187,7 +187,8 @@ bool Database::updatePlayer(Player& player)
 	sqlite3_bind_int(stmt, 6, player.mExperienceNeeded);
 	sqlite3_bind_double(stmt, 7, player.getBullet().circle.getRadius());
 	sqlite3_bind_double(stmt, 8, player.getBulletDelay());
-	sqlite3_bind_int(stmt, 9, player.idPlayer);
+	sqlite3_bind_int(stmt, 9, player.potion.quantity);
+	sqlite3_bind_int(stmt, 10, player.idPlayer);
 	sqlite3_step(stmt);
 	sqlite3_finalize(stmt);
 
@@ -228,7 +229,7 @@ Player Database::getPlayer(int id)
 
 bool Database::resetPlayer(int id)
 {
-	std::string query = "UPDATE Player SET maxHP=?, attackDamage=?, level=?, currency=?, currentXP=?, expNeeded=?, bulletRadius=?, bulletDelay=? WHERE idPlayer=?";
+	std::string query = "UPDATE Player SET maxHP=?, attackDamage=?, level=?, currency=?, currentXP=?, expNeeded=?, bulletRadius=?, bulletDelay=?, potionQty=? WHERE idPlayer=?";
 	sqlite3_stmt * stmt;
 	sqlite3_prepare_v2(db, query.c_str(), strlen(query.c_str()) + 1, &stmt, NULL);
 	Player player;
@@ -243,7 +244,8 @@ bool Database::resetPlayer(int id)
 	sqlite3_bind_int(stmt, 6, player.mExperienceNeeded);
 	sqlite3_bind_double(stmt, 7, player.getBullet().circle.getRadius());
 	sqlite3_bind_double(stmt, 8, player.getBulletDelay());
-	sqlite3_bind_int(stmt, 9, id);
+	sqlite3_bind_int(stmt, 9, player.potion.quantity);
+	sqlite3_bind_int(stmt, 10, id);
 	sqlite3_step(stmt);
 	sqlite3_finalize(stmt);
 

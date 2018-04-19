@@ -4,7 +4,7 @@
 
 int main()
 {
-	std::string query = "CREATE TABLE IF NOT EXISTS Player (idPlayer INTEGER PRIMARY KEY, maxHP INT, attackDamage INT, level INT, currency INT, currentXP INT, expNeeded INT, bulletRadius FLOAT, bulletDelay FLOAT)";
+	std::string query = "CREATE TABLE IF NOT EXISTS Player (idPlayer INTEGER PRIMARY KEY, maxHP INT, attackDamage INT, level INT, currency INT, currentXP INT, expNeeded INT, bulletRadius FLOAT, bulletDelay FLOAT, potionQty INT)";
 	std::string query2 = "CREATE TABLE IF NOT EXISTS Items (idItem INTEGER PRIMARY KEY, name TEXT, quantity INT, FKidPlayer integer NOT NULL, FOREIGN KEY(FKidPlayer) REFERENCES Player(idPlayer))";
 
 	Database* db = new Database();

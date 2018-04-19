@@ -133,5 +133,6 @@ private:
 
 	sf::Text mTitle;/*!< Titre de l'état*/
 	std::vector<sf::Text> mButtons;/*!<  Bouttons affichés lors d'une nouvelle partie*/
+	sf::Music bgMusic;
 };
 

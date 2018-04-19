@@ -22,9 +22,23 @@
 class TextDisplay : public Entity
 {
 public:
+	/**
+	* \brief		Constructeur
+	*
+	*Constructeur de la classe TextDisplay
+	*
+	*/
 	TextDisplay();
+
+	/**
+	* \brief		Mise à jour de la logique de textDisplay
+	*
+	*Mise à jour de la logique de textDisplay
+	*
+	*/
 	void update();
 
-	std::string myString = "default";/*!< */
+	std::string myString = "default";/*!< chaine de caracètre à afficher*/
+	sf::Clock textClock;
 };
 

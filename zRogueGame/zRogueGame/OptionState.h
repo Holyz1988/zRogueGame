@@ -98,15 +98,17 @@ private:
 	*
 	* \param buttons : les bouttons (textes) survolés
 	*/
-	void changeTextDesign(std::vector<sf::Text>& buttons);
+	void changeTextDesign(sf::Text& buttons);
 
 private:
 	GameDataRef _data;/*!< données communes aux états (fenêtre, état actuel)*/
 
-	RessourceHolder optionScreen;/*!<  Objet RessourceHolder, stock les textures et les fonts*/
+	RessourceHolder ressources;/*!<  Objet RessourceHolder, stock les textures et les fonts*/
 	sf::Sprite optionBackground;/*!< Sprite du fond d'écran*/
 
-	std::vector<sf::Text> buttons;/*!< Bouttons affichés lors de l'état option*/
+	sf::Text mButton;/*!< Bouttons affichés lors de l'état option*/
+	sf::Text mYesNo;/*!< Texte affichant oui ou non*/
+	sf::Text mTitle;/*!< Titre de l'état*/
 };
 
 

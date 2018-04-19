@@ -99,14 +99,17 @@ void MenuState::handleInput()
 			{
 				if (isTextClicked(mButtons[0]))
 				{
+					//bgMusic.stop();
 					loadPlayers();
 				}
 				else if (isTextClicked(mButtons[1]))
 				{
+					//bgMusic.stop();
 					loadSaves();
 				}
 				else if (isTextClicked(mButtons[2]))
 				{
+					//bgMusic.stop();
 					loadOptions();
 				}
 				else if (isTextClicked(mButtons[3]))

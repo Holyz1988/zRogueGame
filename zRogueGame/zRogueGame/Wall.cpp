@@ -9,6 +9,7 @@ Wall::Wall() : locked(false)
 {
 	rect.setSize(sf::Vector2f(32.f, 32.f));
 	rect.setPosition(sf::Vector2f(0.f, 0.f));
+	rect.setFillColor(sf::Color::Red);
 }
 
 void Wall::initArena(std::vector<Wall>& walls, Wall& wall)
@@ -35,7 +36,7 @@ void Wall::initArena(std::vector<Wall>& walls, Wall& wall)
 	}
 
 	//On dessine les murs horizontaux du bas
-	for (size_t i = 0; i <= HORIZONTAL_WALL; i++)
+	for (size_t i = 0; i < HORIZONTAL_WALL; i++)
 	{
 		wall.rect.setPosition(sf::Vector2f(((float)i + 1.f) * BLOCK_SIZE, VERTICAL_WALL * BLOCK_SIZE));
 		walls.push_back(wall);
